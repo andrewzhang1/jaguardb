@@ -1,0 +1,18 @@
+Jaguar 2.7.0.1 07/06/017
+--------------------------------------------------------------
+. Added scripts for installing Jaguar on all hosts in cluster
+. Added Big data components (Kafka, Hadoop, Spark), one key installation
+  on all hosts
+. Added TensorFlow AI software
+
+Jaguar 2.7.0  06/27/2017
+--------------------------------------------------------------
+1. Make sure there are no duplicates in saved data.
+
+
+Jaguar 2.6.9 06/18/2017
+--------------------------------------------------------------
+1. Make scaling of Jaguar cluster easy and fast
+2. Free trial version can run on any number of nodes with all
+   basic features (except the fault-tolerance support).
+
