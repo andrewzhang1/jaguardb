@@ -1,4 +1,4 @@
-Jaguar 2.7.0.1 07/06/017
+Jaguar 2.7.0.1 07/07/017
 --------------------------------------------------------------
 . Added scripts for installing Jaguar on all hosts in cluster
 . Added Big data components (Kafka, Hadoop, Spark), one key installation
