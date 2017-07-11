@@ -4,6 +4,7 @@ Jaguar 2.7.0.1 07/07/017
 . Added Big data components (Kafka, Hadoop, Spark), one key installation
   on all hosts
 . Added TensorFlow AI software
+. Added jaguar-admin-2.7.0.1.tar.gz for JaguarDB admin/monitor package
 
 Jaguar 2.7.0  06/27/2017
 --------------------------------------------------------------
