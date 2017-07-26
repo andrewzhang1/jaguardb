@@ -11,51 +11,11 @@
 
 using namespace std;
 
-//class mysqlimport {
-/**************
-	MYSQL * conn;
-	MYSQL * schema_conn;
-	MYSQL_RES * tbl_res;
-	MYSQL_RES * schema_res;
-	MYSQL_RES * res;
-	MYSQL_ROW row;
-	MYSQL_ROW curr_schema;
-	MYSQL_ROW curr_tbl;
-
-	MYSQL_RES * field_type;
-	MYSQL_ROW curr_field;
-	string temp;
-	int rc;
-
-	//The following two dbs are created automatically; Remove this when the code can detect system created dbs automatically
-	const char * mysqlimport::info_schema = "information_schema";
-	const char * mysqlimport::my_db = "mydb";
-
-
-	char const * ip;
-	int port;
-	char const * username;
-	char const * password;
-	char const * database;
-	char * schema;
-	char const * jaguar_host;
-	int jaguar_port;
-	char const * jaguar_uid;
-	char const * jaguar_pass;
-	char const * jaguar_db;
-	int tbl_defined;
-	string source_tbl;
-	*******/
-
-	
-
-
-	
-	void mysqlimport::initialize(char const * ip, int port, char const * username, char const * password, 
+void mysqlimport::initialize(char const * ip, int port, char const * username, char const * password, 
 									char const * database, const char * schema, char const * jaguar_host, int jaguar_port,
 									char const * jaguar_uid, char const * jaguar_pass, char const * jaguar_db,
 									int tbl_defined, const char * source_tbl) 
-	{
+{
 		info_schema = "information_schema";
 		my_db = "mydb";
 
@@ -72,10 +32,10 @@ using namespace std;
 		this->jaguar_db = jaguar_db;
 		this->tbl_defined = tbl_defined;
 		this->source_tbl = source_tbl;
-	}
+}
 
-	int mysqlimport::run() 
-	{
+int mysqlimport::run() 
+{
 		JaguarAPI jdb;
 		if (!jdb.connect(jaguar_host.c_str(), jaguar_port, jaguar_uid.c_str(), jaguar_pass.c_str(), jaguar_db.c_str() )) {
 			printf("Error connecting Jaguar database jaguar_host=[%s] jaguar_port=[%s] jaguar_uid=[%s] jaguar_pass=[%s] jaguar_db=[%s]\n",
@@ -148,15 +108,11 @@ using namespace std;
 				int max_char = 0;//Max length of char
 				string max_char_string = "0";
 				while ((curr_field = mysql_fetch_row(field_type)) != NULL) {
-
 					string column = curr_field[0];
-
 					//convert mysql type to jaguar type
 					string type = curr_field[1];
-
 					//primary key field
 					string pk = curr_field[3];
-
 					//TOUPPER the field
 					for (int i = 0; i<type.length();i++) {
 						type[i] = toupper(type[i]);
@@ -241,8 +197,9 @@ using namespace std;
 				create_table_query = create_table_query.substr(0, create_table_query.size() - 1);
 				create_table_query += ");";
 
-				cout << "===============Executing Jaguar Query:" << create_table_query << endl;
+				cout << "===============Executing Jaguar Query: " << create_table_query << endl;
 				char const * final_create_table_query = create_table_query.c_str();
+				/*** do not create table
 				rc = jdb.execute(final_create_table_query);
 				if (!rc) {
 					printf("Table creation error\n");
@@ -250,8 +207,8 @@ using namespace std;
 					jdb.close();
 					exit(1);
 				}
+				***/
 				mysql_free_result(field_type);
-
 				//End of table creation	
 
 				//Start of data transfering
@@ -260,10 +217,7 @@ using namespace std;
 				temp += tbl_name;
 
 				char const * query = temp.c_str();
-
 				cout << "---------------Executing MySQL Query: " << query << endl;
-
-
 				if (mysql_query(conn, query)) {
 					fprintf(stderr, "%s\n", mysql_error(conn));
 					exit(1);
@@ -278,8 +232,6 @@ using namespace std;
 				//Loop through columns and create the Jaguar query
 				int uid = 0;
 				while ((row = mysql_fetch_row(res)) != NULL) {
-					//cout<<"entering table loop"<<endl;
-
 					string insertion_query = "insert into ";
 					insertion_query += tbl_name;
 					insertion_query += " ( ";
@@ -359,5 +311,4 @@ using namespace std;
 
 		return 0;
 
-	}
-//};
+}

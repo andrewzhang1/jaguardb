@@ -8,7 +8,6 @@
 #include <vector>
 #include "JaguarAPI.h"
 #include "mysqlimport.h"
-#include "postgreimport.h"
 
 using namespace std;
 
@@ -18,21 +17,23 @@ using namespace std;
 *	@param NULL
 *	@Author Robert
 */
-void print_help() {
-	cout << "Required:" << endl;
-	cout << "\t-srcdb\t\tsource_database_name" << endl;
-	cout << "\t-destdb\t\tdest_database_name" << endl;
-	cout << "\t-srcdbtype\t\tdatabase_type" << endl;
-	cout << "\t-srchost\t\tsource_ip_address" << endl;
-	cout << "\t-srcport\t\tsource_ip_port" << endl;
-	cout << "\t-srcusr\t\tsource_user_name" << endl;
-	cout << "\t-srcpass\t\tsource_password" << endl;
-	cout << "\t-desthost\t\tdest_ip_adress" << endl;
-	cout << "\t-destport\t\tdest_port" << endl;
-	cout << "\t-destusr\t\tdest_username" << endl;
-	cout << "\t-destpass\t\tdest_password" << endl;
+void print_help( const char *prog ) 
+{
+	cout << prog << " <PARAMETERS> " << endl;
+	cout << "Required PARAMETERS:" << endl;
+	cout << "\t-srcdbtype  database_type (mysql or postgres)" << endl;
+	cout << "\t-srcdb      source_database_name" << endl;
+	cout << "\t-destdb     dest_database_name" << endl;
+	cout << "\t-srchost    source_ip_address" << endl;
+	cout << "\t-srcport    source_port (mysql port is 3306)" << endl;
+	cout << "\t-srcuser    source_user_name" << endl;
+	cout << "\t-srcpass    source_password" << endl;
+	cout << "\t-desthost   dest_ip_adress" << endl;
+	cout << "\t-destport   dest_port (jaguar port is 8888)" << endl;
+	cout << "\t-destuser   jaguar username" << endl;
+	cout << "\t-destpass   jaguar user password" << endl;
 	cout << "Optional:" << endl;
-	cout << "\t-tbl\t\ttable_name" << endl;
+	cout << "\t-table      table_name (if not provided, all tables are imported)" << endl;
 }
 
 
@@ -57,21 +58,16 @@ int main(int argc, char* argv[]){
 	//Seach for --help and return if exists
 	for (int i = 1; i < argc; i++) {
 		if (string(argv[i]) == "--help") {
-			print_help();
+			print_help( argv[0] );
 			return 1;
 		}
-		//Test for postpq
-		if(string(argv[i]) == "--test"){
-			postgreimport * pg = new postgreimport();
-			pg->run();
-			delete pg;
-		}
+
 	}
 	
 	//Check if theres enough parameters
 	if(argc < 23) {
-	//cout<<"Usage:-srcdb srcdbname -destdb destdbname (-tbl tablename) -srcdbtype dbtype -srchost host1 -srcport port1 -srcusr username -srcpass password -desthost host2 -destport port2 -destusr username -destpass password"<<endl;	
-		cout<<"Missing parameter, please use --help to see instruction"<<endl;
+		cout<<"Missing parameters"<<endl;
+		print_help( argv[0] );
 		return 1;
 	} 
 
@@ -81,7 +77,7 @@ int main(int argc, char* argv[]){
 			string curr_arg = string(argv[i]);
 			string curr_argv = argv[++i];
 			if(curr_arg == "-srcdb")source_database = curr_argv;
-			if(curr_arg == "-tbl") {
+			if(curr_arg == "-table") {
 				source_tbl = curr_argv;
 				tbl_defined = 1;
 			}
@@ -90,11 +86,11 @@ int main(int argc, char* argv[]){
 			if(curr_arg == "-srcdbtype") source_dbtype = curr_argv;
 			if(curr_arg == "-srchost") source_host = curr_argv;
 			if(curr_arg == "-srcport") source_port = curr_argv;
-			if(curr_arg == "-srcusr") source_username = curr_argv;
+			if(curr_arg == "-srcuser") source_username = curr_argv;
 			if(curr_arg == "-srcpass") source_password = curr_argv;
 			if(curr_arg == "-desthost") dest_host = curr_argv;
 			if(curr_arg == "-destport") dest_port = curr_argv;
-			if(curr_arg == "-destusr") dest_username = curr_argv;
+			if(curr_arg == "-destuser") dest_username = curr_argv;
 			if(curr_arg == "-destpass") dest_password = curr_argv;
 			
 		}
@@ -113,19 +109,16 @@ int main(int argc, char* argv[]){
 	char const * jaguar_db = dest_database.c_str();
 	
 
-	if(source_dbtype != "mysql") {//TO-DO: Remove this when more db are supported
+	if(source_dbtype != "mysql") {
 		cout<<"mysql support only, current db input:"<<source_dbtype<<endl;
 		return 1;
 	}
 	
 	if (source_dbtype=="mysql") {	
 		mysqlimport * imp = new mysqlimport();
-
 		imp->initialize( ip,port,username,password,database,schema,jaguar_host,jaguar_port,
 						 jaguar_uid,jaguar_pass,jaguar_db,tbl_defined,source_tbl.c_str() );
-
 		return imp->run();
-
 	} else {
 		return 1;
 	}
