@@ -1,0 +1,7 @@
+To compile mysql client programs, you need:
+
+On CentOS or Redhat:
+# yum install -y postgresql-devel
+
+On Ubuntu:
+# apt-get install -y libpq-dev

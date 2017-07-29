@@ -1,0 +1,7 @@
+To compile mysql client programs, you need:
+
+On CentOS or Redhat:
+# yum install -y mysql-devel
+
+On Ubuntu:
+# apt-get install -y libmysqlclient-dev 

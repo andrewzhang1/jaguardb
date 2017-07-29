@@ -5,11 +5,11 @@ STATLINK=
 .cc.o:
 	 g++ -I$(INCDIR) `mysql_config --cflags --libs` $(STATLINK) -c -o $@ $<
 
-jaguarimport: main.o mysqlimport.o  postgreimport.o
+jaguarimport: main.o mysqlimport.o 
 	g++ -o $@ -I$(INCDIR) $(STATLINK) \
 	`mysql_config --cflags --libs` \
-	main.o mysqlimport.o  postgreimport.o \
-	-L $(HOME)/jaguar/lib -L/usr/lib64 -I/usr/include/pgsql/ -lpq -ljaguar -lstdc++ -g
+	main.o mysqlimport.o  \
+	-L $(HOME)/jaguar/lib -L/usr/lib64 -lpq -ljaguar -lstdc++ -g
 
 
 clean:

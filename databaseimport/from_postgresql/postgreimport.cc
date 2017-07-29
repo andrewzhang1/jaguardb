@@ -10,29 +10,12 @@
 
 using namespace std;
 
-//class postgreimport {
-/**
-	PGconn * pg_conn;
-	PGconn * pg_schema_conn;
-	PGresult * pg_tbl_res;
-	PGresult * pg_schema_res;
-	PGresult * pg_res;
-	//MYSQL_ROW row;
-	//MYSQL_ROW curr_schema;
-	//MYSQL_ROW curr_tbl;
-
-//	MYSQL_RES * field_type;
- 
-	//MYSQL_ROW curr_field;
-	string pg_temp;
-	int pg_rc;
-	********/
-
 	
-	void postgreimport::initialize(char const * ip, char const * port, char const * username, char const * password,
+void postgreimport::initialize(char const * ip, char const * port, char const * username, char const * password,
 								   char const * database, const char * schema, char const * jaguar_host, 
 								   char const * jaguar_port, char const * jaguar_uid, char const * jaguar_pass, 
-								   char const * jaguar_db, int tbl_defined, const char *source_tbl) {
+								   char const * jaguar_db, int tbl_defined, const char *source_tbl) 
+{
 		this->pg_ip = ip;
 		this->pg_port = port;
 		this->pg_username = username;
@@ -46,10 +29,10 @@ using namespace std;
 		this->pg_jaguar_db = jaguar_db;
 		this->pg_tbl_defined = tbl_defined;
 		this->pg_source_tbl = source_tbl;
-	}
+}
 
-	int postgreimport::run() 
-	{
+int postgreimport::run() 
+{
 		JaguarAPI jdb;
 		if (!jdb.connect( pg_jaguar_host.c_str(), atoi(pg_jaguar_port.c_str()), pg_jaguar_uid.c_str(),
 						  pg_jaguar_pass.c_str(), pg_jaguar_db.c_str()  )) {
@@ -235,5 +218,4 @@ using namespace std;
 
 		return 0;
 
-	}
-//};
+}
