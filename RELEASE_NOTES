@@ -1,4 +1,8 @@
 
+Jaguar 2.7.0.3 07/28/2017
+--------------------------------------------------------------
+. Fixed bug metata info from JDBC
+
 Jaguar 2.7.0.2 07/26/2017
 --------------------------------------------------------------
 . Fixed bug in getValue() method in client. This affected Java
