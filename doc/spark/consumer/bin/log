@@ -1,0 +1,374 @@
+Thu Mar 23 13:52:55 PDT 2017
+run 
+=== In each RDD : rdd.id=1 threadID=159 =============
+BlockRDD[1] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=2 threadID=159 =============
+BlockRDD[2] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=3 threadID=159 =============
+BlockRDD[3] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=4 threadID=159 =============
+BlockRDD[4] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=5 threadID=159 =============
+BlockRDD[5] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=6 threadID=159 =============
+BlockRDD[6] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=7 threadID=159 =============
+BlockRDD[7] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=8 threadID=159 =============
+BlockRDD[8] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=9 threadID=159 =============
+BlockRDD[9] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=10 threadID=159 =============
+BlockRDD[10] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=11 threadID=159 =============
+BlockRDD[11] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=12 threadID=159 =============
+BlockRDD[12] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=13 threadID=159 =============
+BlockRDD[13] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=14 threadID=159 =============
+BlockRDD[14] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=15 threadID=159 =============
+BlockRDD[15] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=16 threadID=159 =============
+BlockRDD[16] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=17 threadID=159 =============
+BlockRDD[17] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=18 threadID=159 =============
+BlockRDD[18] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=19 threadID=159 =============
+BlockRDD[19] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=20 threadID=159 =============
+BlockRDD[20] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=21 threadID=159 =============
+BlockRDD[21] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=22 threadID=159 =============
+BlockRDD[22] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=23 threadID=159 =============
+BlockRDD[23] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=24 threadID=159 =============
+BlockRDD[24] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=25 threadID=159 =============
+BlockRDD[25] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=26 threadID=159 =============
+BlockRDD[26] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=27 threadID=159 =============
+BlockRDD[27] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=28 threadID=159 =============
+BlockRDD[28] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=29 threadID=159 =============
+BlockRDD[29] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=30 threadID=159 =============
+BlockRDD[30] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=31 threadID=159 =============
+BlockRDD[31] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=32 threadID=159 =============
+BlockRDD[32] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=33 threadID=159 =============
+BlockRDD[33] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=34 threadID=159 =============
+BlockRDD[34] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=35 threadID=159 =============
+BlockRDD[35] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=36 threadID=159 =============
+BlockRDD[36] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=37 threadID=159 =============
+BlockRDD[37] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=38 threadID=159 =============
+BlockRDD[38] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=39 threadID=159 =============
+BlockRDD[39] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=40 threadID=159 =============
+BlockRDD[40] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=41 threadID=159 =============
+BlockRDD[41] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=42 threadID=159 =============
+BlockRDD[42] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=43 threadID=159 =============
+BlockRDD[43] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=44 threadID=159 =============
+BlockRDD[44] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=45 threadID=159 =============
+BlockRDD[45] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=46 threadID=159 =============
+BlockRDD[46] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=47 threadID=159 =============
+BlockRDD[47] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=48 threadID=159 =============
+BlockRDD[48] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=49 threadID=159 =============
+BlockRDD[49] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=50 threadID=159 =============
+BlockRDD[50] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=51 threadID=159 =============
+BlockRDD[51] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=52 threadID=159 =============
+BlockRDD[52] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=53 threadID=159 =============
+BlockRDD[53] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=54 threadID=159 =============
+BlockRDD[54] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=55 threadID=159 =============
+BlockRDD[55] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=56 threadID=159 =============
+BlockRDD[56] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=57 threadID=159 =============
+BlockRDD[57] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=58 threadID=159 =============
+BlockRDD[58] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=59 threadID=159 =============
+BlockRDD[59] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=60 threadID=159 =============
+BlockRDD[60] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=61 threadID=159 =============
+BlockRDD[61] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=62 threadID=159 =============
+BlockRDD[62] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=63 threadID=159 =============
+BlockRDD[63] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=64 threadID=159 =============
+BlockRDD[64] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=65 threadID=159 =============
+BlockRDD[65] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=66 threadID=159 =============
+BlockRDD[66] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=67 threadID=159 =============
+BlockRDD[67] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=68 threadID=159 =============
+BlockRDD[68] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=69 threadID=159 =============
+BlockRDD[69] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=70 threadID=159 =============
+BlockRDD[70] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=71 threadID=159 =============
+BlockRDD[71] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=72 threadID=159 =============
+BlockRDD[72] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=73 threadID=159 =============
+BlockRDD[73] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=74 threadID=159 =============
+BlockRDD[74] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=75 threadID=159 =============
+BlockRDD[75] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=76 threadID=159 =============
+BlockRDD[76] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=77 threadID=159 =============
+BlockRDD[77] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=78 threadID=159 =============
+BlockRDD[78] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=79 threadID=159 =============
+BlockRDD[79] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=80 threadID=159 =============
+BlockRDD[80] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=81 threadID=159 =============
+BlockRDD[81] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=82 threadID=159 =============
+BlockRDD[82] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=83 threadID=159 =============
+BlockRDD[83] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=84 threadID=159 =============
+BlockRDD[84] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=85 threadID=159 =============
+BlockRDD[85] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=86 threadID=159 =============
+BlockRDD[86] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=87 threadID=159 =============
+BlockRDD[87] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=88 threadID=159 =============
+BlockRDD[88] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=89 threadID=159 =============
+BlockRDD[89] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=90 threadID=159 =============
+BlockRDD[90] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=91 threadID=159 =============
+BlockRDD[91] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=92 threadID=159 =============
+BlockRDD[92] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=93 threadID=159 =============
+BlockRDD[93] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=94 threadID=159 =============
+BlockRDD[94] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=95 threadID=159 =============
+BlockRDD[95] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=96 threadID=159 =============
+BlockRDD[96] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=97 threadID=159 =============
+BlockRDD[97] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=98 threadID=159 =============
+BlockRDD[98] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=99 threadID=159 =============
+BlockRDD[99] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=100 threadID=159 =============
+BlockRDD[100] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=101 threadID=159 =============
+BlockRDD[101] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=102 threadID=159 =============
+BlockRDD[102] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=103 threadID=159 =============
+BlockRDD[103] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=104 threadID=159 =============
+BlockRDD[104] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=105 threadID=159 =============
+BlockRDD[105] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=106 threadID=159 =============
+BlockRDD[106] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=107 threadID=159 =============
+BlockRDD[107] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=108 threadID=159 =============
+BlockRDD[108] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=109 threadID=159 =============
+BlockRDD[109] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=110 threadID=159 =============
+BlockRDD[110] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=111 threadID=159 =============
+BlockRDD[111] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=112 threadID=159 =============
+BlockRDD[112] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=113 threadID=159 =============
+BlockRDD[113] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=114 threadID=159 =============
+BlockRDD[114] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=115 threadID=159 =============
+BlockRDD[115] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=116 threadID=159 =============
+BlockRDD[116] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=117 threadID=159 =============
+BlockRDD[117] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=118 threadID=159 =============
+BlockRDD[118] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=119 threadID=159 =============
+BlockRDD[119] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=120 threadID=159 =============
+BlockRDD[120] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=121 threadID=159 =============
+BlockRDD[121] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=122 threadID=159 =============
+BlockRDD[122] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=123 threadID=159 =============
+BlockRDD[123] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=124 threadID=159 =============
+BlockRDD[124] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=125 threadID=159 =============
+BlockRDD[125] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=126 threadID=159 =============
+BlockRDD[126] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=127 threadID=159 =============
+BlockRDD[127] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=128 threadID=159 =============
+BlockRDD[128] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=129 threadID=159 =============
+BlockRDD[129] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=130 threadID=159 =============
+BlockRDD[130] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=131 threadID=159 =============
+BlockRDD[131] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=132 threadID=159 =============
+BlockRDD[132] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=133 threadID=159 =============
+BlockRDD[133] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=134 threadID=159 =============
+BlockRDD[134] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=135 threadID=159 =============
+BlockRDD[135] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=136 threadID=159 =============
+BlockRDD[136] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=137 threadID=159 =============
+BlockRDD[137] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=138 threadID=159 =============
+BlockRDD[138] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=139 threadID=159 =============
+BlockRDD[139] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=140 threadID=159 =============
+BlockRDD[140] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=141 threadID=159 =============
+BlockRDD[141] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=142 threadID=159 =============
+BlockRDD[142] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=143 threadID=159 =============
+BlockRDD[143] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=144 threadID=159 =============
+BlockRDD[144] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=145 threadID=159 =============
+BlockRDD[145] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=146 threadID=159 =============
+BlockRDD[146] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=147 threadID=159 =============
+BlockRDD[147] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=148 threadID=159 =============
+BlockRDD[148] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=149 threadID=159 =============
+BlockRDD[149] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=150 threadID=159 =============
+BlockRDD[150] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=151 threadID=159 =============
+BlockRDD[151] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=152 threadID=159 =============
+BlockRDD[152] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=153 threadID=159 =============
+BlockRDD[153] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=154 threadID=159 =============
+BlockRDD[154] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=155 threadID=159 =============
+BlockRDD[155] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=156 threadID=159 =============
+BlockRDD[156] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=157 threadID=159 =============
+BlockRDD[157] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=158 threadID=159 =============
+BlockRDD[158] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=159 threadID=159 =============
+BlockRDD[159] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=160 threadID=159 =============
+BlockRDD[160] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=161 threadID=159 =============
+BlockRDD[161] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=162 threadID=159 =============
+BlockRDD[162] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=163 threadID=159 =============
+BlockRDD[163] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=164 threadID=159 =============
+BlockRDD[164] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=165 threadID=159 =============
+BlockRDD[165] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=166 threadID=159 =============
+BlockRDD[166] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=167 threadID=159 =============
+BlockRDD[167] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=168 threadID=159 =============
+BlockRDD[168] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=169 threadID=159 =============
+BlockRDD[169] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=170 threadID=159 =============
+BlockRDD[170] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=171 threadID=159 =============
+BlockRDD[171] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=172 threadID=159 =============
+BlockRDD[172] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=173 threadID=159 =============
+BlockRDD[173] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=174 threadID=159 =============
+BlockRDD[174] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=175 threadID=159 =============
+BlockRDD[175] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=176 threadID=159 =============
+BlockRDD[176] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=177 threadID=159 =============
+BlockRDD[177] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=178 threadID=159 =============
+BlockRDD[178] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=179 threadID=159 =============
+BlockRDD[179] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=180 threadID=159 =============
+BlockRDD[180] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=181 threadID=159 =============
+BlockRDD[181] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=182 threadID=159 =============
+BlockRDD[182] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=183 threadID=159 =============
+BlockRDD[183] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=184 threadID=159 =============
+BlockRDD[184] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=185 threadID=159 =============
+BlockRDD[185] at createStream at TestStreaming.scala:43
+=== In each RDD : rdd.id=186 threadID=159 =============
+BlockRDD[186] at createStream at TestStreaming.scala:43
