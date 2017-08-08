@@ -1,4 +1,4 @@
-Kafka: Example 0
+How to use Kafka
 This tutorial example illustrates how to start Kafka manually.
 
 After installing Kafka on all hosts provided, some configuration parameters in 
