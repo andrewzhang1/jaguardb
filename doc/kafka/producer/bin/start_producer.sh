@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## Number of data items to produce 
 cnt=$1
 
 if [[ "x$cnt" = "x" ]]; then
@@ -7,4 +8,4 @@ if [[ "x$cnt" = "x" ]]; then
 fi
 
 export LD_LIBRARY_PATH=$HOME/jaguar/lib
-java -cp ../target/jaguar-kafka-1.0-SNAPSHOT-jar-with-dependencies.jar:../lib/jaguar-jdbc-2.0.jar:../jaguar_kafka/lib/slf4j-simple-1.6.2.jar SQLRunner producer $cnt
+java -cp ../target/jaguar-kafka-1.0-SNAPSHOT-jar-with-dependencies.jar:../lib/jaguar-jdbc-2.0.jar:../lib/slf4j-simple-1.6.2.jar SQLRunner producer $cnt
