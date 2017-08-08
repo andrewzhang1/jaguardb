@@ -1,0 +1,100 @@
+Kafka: Example 0
+This tutorial example illustrates how to start Kafka manually.
+
+After installing Kafka on all hosts provided, some configuration parameters in 
+$HOME/jaguarkafka/config/server.properties and zookeeper.properties are changed.
+
+1. Change directory to $HOME/jaguarkafka/bin.
+   $ cd $HOME/jaguarkafka/bin
+   $HOME should be replaced by the directory where Kafka is actually installed if 
+   Kafka is not instlled in $HOME.
+   For example, if Kafka is installed in /home/user/bigdata_dir/, you can change
+   directory by executing the following command:
+   $ cd /home/user/bigdata_dir/jaguarkafka/bin
+
+2. Start Zookeeper servers on all hosts if Zookeeper has not started. Zookeeper 
+   must be started before Kafka.
+   $ ./start_zookeeper_on_all_hosts.sh
+
+3. Start Kafka servres on all hosts if Kafka has not started.
+   $ ./start_kafka_on_all_hosts.sh
+   
+   Now all Zookeeper and Kafka servers are started on all hosts provided.
+
+4. Create a topic. In Kafka, topic means a category or feed name to which records
+   are published.
+   $ ./kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 \
+     --partitions 3 --topic test
+   Created topic "test".
+
+   After executing this command, a topic named test will be created. It has 3
+   partitions and each partition has 3 replica. It is also connected to localhost, 
+   one of hosts in Zookeeper cluster, whose port number is 2181.
+   
+5. View the topics created if running the list topic command. 
+   $ ./kafka-topics.sh --list --zookeeper localhost:2181
+   test
+
+6. View more details of one topic.
+   $ ./kafka-topics.sh --describe --zookeeper localhost:2181 --topic test
+   Topic:test      PartitionCount:3        ReplicationFactor:3     Configs:
+         Topic: test     Partition: 0    Leader: 3       Replicas: 3,2,1 Isr: 3,2,1
+         Topic: test     Partition: 1    Leader: 1       Replicas: 1,3,2 Isr: 1,3,2
+         Topic: test     Partition: 2    Leader: 2       Replicas: 2,1,3 Isr: 2,1,3
+   
+   It shows main informations for topic test. From the second line of output. 
+   The leader node of Partition 0 is Node 3. Partition 0 has three nodes for 
+   replicating the log and they are Node 3, 2 and 1. Leader node is mainly responsible
+   for reads and writes for the given partition. Isr means which nodes are are currently
+   alive and caught-up to the leader.
+   
+5. Start a producer. Then you can type some messages into the console to send to the
+   server. In the example below, Message One, Message Two and Message Three are typed. 
+   $ ./kafka-console-producer.sh --broker-list localhost:9091 --topic test
+   Message One
+   Message Two
+   Message Three
+   
+   In this example, port number of localhost in the broker list is 9091. But port number
+   may vary for different hosts. So before running the command above, please check 
+   jaguarkafka/config/server.properties. One line begins with listeners=PLAINTEXT://: and
+   the port number for this host should be the number after the second colon.
+
+6. Start a consumer. After running the command below, typed messages in the previous step 
+   will show up in stdout. The order of three messages may be different from the following 
+   example.
+   $ ./kafka-console-consumer.sh --bootstrap-server localhost:9091 \
+     --topic test --from-beginning 
+   Message One
+   Message Two
+   Message Three
+   
+   Similarly, the port number after localhost in the command above should be the same as
+   port number in server.properties. Please check it before running this command.
+
+7. Start multiple producers. Now you can open a new console window and ssh login to second
+   host. Change directory to the bin directory of Kafka. In the following example, the port
+   number of the second host is 9092. Start a producer on the second host and type some 
+   messages.
+   $ ./kafka-console-producer.sh --broker-list localhost:9092 --topic test
+   Message Four
+   Message Five
+
+   Similarly, ssh login to the third host(port number is 9093). Start a producer and type some
+   messages.
+   $ ./kafka-console-producer.sh --broker-list localhost:9093 --topic test
+   Message Six
+
+   Now if you check the consumer console, you can see the new messages also show up.
+   The order of messages may vary.
+   Message One
+   Message Two
+   Message Three
+   Message Four
+   Message Five
+   Message Six
+
+   From this example, it can be seen that one consumer can consume all messages produced by
+   different producers.
+
+8.  

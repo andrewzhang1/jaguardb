@@ -1,0 +1,69 @@
+This example will illustrate how to load data to Zeppelin from Jaguar database,
+and display graphs in Zeppelin.
+
+1. Start Jaguar servers on all hosts.
+   
+   $ cd $HOME/jaguar/bin
+   $ ./jaguarstart_on_all_hosts.sh
+
+   After a few seconds, you can login to Jaguar server and create a table.
+   $ ./jag -u admin -p jaguar -d test -h 192.168.7.120:5555
+
+   User name, password, IP address, port number and database name may vary 
+   depending on your own case.
+
+2. Create a table named "pricetable" in Jaguar and insert some data.
+   
+   jaguar> create table pricetable ( key: year int, value: price tinyint);
+   jaguar> insert into pricetable values(2000, 10);
+   jaguar> insert into pricetable values(2005, 15);
+   jaguar> insert into pricetable values(2010, 20);
+   jaguar> insert into pricetable values(2015, 25);
+
+   The table uses "year" as primary key and "price" as value.
+
+3. Start Zeppelin server process on current host (Zeppelin host).
+
+   $ cd $HOME/jaguarzeppelin/bin
+   $ ./zeppelin-daemon.sh start
+   
+   Now Zeppelin has started. We can then open a browser to plot a graph.
+
+4. Change user name and password of jaguar interpreter on Zeppelin.
+   (1) Open an Internet browser.
+   (2) Enter Zeppelin host IP:8080 in address bar.
+       For example, 192.168.7.120:8080. 192.168.7.120 is the IP address of
+       the Zeppelin host.
+   (3) Click on "anonymous" in the top-right corner in your browser. 
+       And then click on "Interpreter".
+   (4) Find "jaguar" interpreter, and click on "edit".
+       Change default.user and default.password to your own user name and 
+       password that are used to login to Jaguar database.
+   (5) Click on "Save".
+
+5. Database name in jaguar interpreter on Zeppelin.
+   If you check default.url in jaguar interpreter on Zeppelin, it may be like
+   jdbc:jaguar://192.168.7.120:5555/test. Here, 'test' is the default database name
+   of Jaguar which Zeppelin will connect to. It should be changed to the database
+   you actually want to connect to.
+
+6. Plot a graph.
+   (1) Click on Notebook at the very top of the web page. 
+       And then click on "Create new note". 
+       Give a note name, such as "Plot Jaguar Data"
+       Change Default Interpreter to "jaguar".
+       Click on "create note".
+   (2) On the new web page, type the following command in the input box:
+       select * from pricetable order by year
+       And then press Shift+Enter.
+       A table including all data records in pricetable will show up. 
+       You can click on the different graph buttons to display the data with
+       different chart styles, such as Bar Chart, Pie Chart, Area Chart, Line Chart 
+       or Scatter Chart. 
+
+7. Stop Zeppelin.
+   If you want to stop Zeppelin server on current host, you can execute the following
+   commands.
+
+   $ cd $HOME/jaguarzeppelin/bin
+   $ ./zeppelin-daemon.sh stop
