@@ -10,3 +10,7 @@ then
 else
 	ln -s apache-ant-1.10.1 ant
 fi
+
+pd=`pwd`
+export ANT_HOME=$pd/ant
+
