@@ -1,6 +1,6 @@
 ## Change configurations
 
-Change bootstrap servers for kafka in target/classes/producer.props
+Change bootstrap servers for kafka in src/main/resources/producer.props
 After 'bootstrap.servers=', add kafka servers and port.
 For example, we can change like below:
 bootstrap.servers=192.168.7.120:9091,192.168.7.108:9091
