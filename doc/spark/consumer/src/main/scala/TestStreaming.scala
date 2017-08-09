@@ -28,7 +28,7 @@ object TestStreaming {
 
   def main(args: Array[String]) {
 
-    val jagaurTopic = "jaguar-sql-messages"
+    val jagaurTopic = "jaguar-kafka-Example"
     kafkaConsume("192.168.7.120:2181", "test-group", jagaurTopic, 10)
   }
 
@@ -52,7 +52,7 @@ object TestStreaming {
         rdd.foreach { record =>
                 	val threadId2 = Thread.currentThread().getId()
 	                println("*** In each record:  threadID2=" + threadId2 + " *************")
-                    val sqlstr = "insert into test values (" + record._2 + ")"
+                    val sqlstr = "insert into pricetable values (" + record._2 + ")"
 	                println( sqlstr )
 	                jdb.runSql(sqlstr)
         }
