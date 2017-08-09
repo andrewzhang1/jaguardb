@@ -19,7 +19,7 @@ This example will illustrate how to load data from Kafka to Jaguar database.
 
 3. Create a table named pricetable in Jaguar.
 
-   jaguar> create table pricetable ( key: item char(16), value: price tinyint);
+   jaguar> create table pricetable ( key: item char(16), value: price bigint);
    
 4. Start a Kafka producer.
    Open another terminal window for Kafka producer. Change directory to 
