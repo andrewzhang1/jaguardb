@@ -9,7 +9,7 @@ JARS=$MY_LIB/spark-streaming_2.10-2.1.1.jar,$MY_LIB/spark-streaming-kafka_2.10-1
 
 PROJJAR=../target/scala-2.10/testjdbc_2.10-1.0.jar
 
-export SPARK_HOME=/home/meng/jaugarspark
+export SPARK_HOME=/home/meng/jaguarspark
 
 t1=`date +'%s'`
 
