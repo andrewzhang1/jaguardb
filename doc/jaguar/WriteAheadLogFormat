@@ -1,0 +1,22 @@
+1. Jaguar Write Ahead Log (WAL) is located in
+    $JAGUAR_HOME/jaguar/log/cmd/walactive.log on each server
+
+2. WAL example
+
+0;-240;0;0000000000000023drop table test.jbench;0;-240;0;0000000000000068create table test.jbench( key: uid char(16), value: addr char(32));0;-240;0;0000000000000038create index jidx on test.jbench(addr)0;-240;1;0000000008700000insert into test.jbench values ('FA37jNCchRYdSBZA','YY4CbwdXs22jJZHmAIrRv41MTZXLyVkw');insert into test.jbench values ('Ro72Tk0lk0E1Zloz','2NoxPpiHmfsV8Kp07u20O0j90Xa0gwxi');insert into test.jbench values ('iWO7j4OGhfzqXWq2','rq0drjkretpvZXLfRxl8B7MTklhigHiH');insert into test.jbench values ('5jUwCfWRGjkDe3T5','BecalY3EkiWyXef3v7z8ktX0NfE1ix5T');insert into test.jbench values ('Jh22f5GxoA5lNimi','qUoInjJ8yl8RQdIzsKzFOedaMgtxxQQV');insert into test.jbench values ('KcD5wke2FmTvxA2Z','kAE6OPgy4I6ByUug67lAsxD5TuBo4Bnp');
+
+3. Format Spec
+
+Fields separated by ';':
+
+Field 1:   0     -- replicate type: 0 is data; 1 is pdata; 2 is ndata
+Filed 2:   -240  -- client time zone diff in minutes
+Filed 3:   0     -- command type: 
+                   0 means single command (create table, drop table, update table, delete table, createdb, etc); 
+                   1 means batch commands following, batch commands separted by ';' character
+Field 4:   0000000000000023: length of ensuing SQL command or batch commands
+Field 5:   SQL command text
+... (pattern repeats)
+... (pattern repeats)
+... (pattern repeats)
+
