@@ -1,4 +1,4 @@
-bootstrap.servers=ssd:9091,hd1:9092,hd2:9093
+bootstrap.servers=localhost:9092
 acks=all
 retries=0
 batch.size=16384

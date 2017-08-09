@@ -6,11 +6,11 @@ import java.io.IOException;
  */
 public class SQLRunner {
 
-    public final static String TOPIC = "jaguar-sql-messages";
+    public final static String TOPIC = "jaguar-kafka-Example";
 
     public static void main(String[] args) throws IOException {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Must have either 'producer' or 'consumer' as argument");
+            throw new IllegalArgumentException("Must have 'producer' as argument");
         }
         switch (args[0]) {
             case "egiftproducer":
