@@ -11,7 +11,7 @@ the second server and send produced data to the server.
 
 ## Create Jaguar table
 
-Please check readme file in the folder of kafka/consumer to create a table
+Please check README.md file in the folder of kafka/consumer to create a table
 called pricetable.
 
 ## build program and run the fun
