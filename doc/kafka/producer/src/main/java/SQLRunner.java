@@ -13,14 +13,8 @@ public class SQLRunner {
             throw new IllegalArgumentException("Must have 'producer' as argument");
         }
         switch (args[0]) {
-            case "egiftproducer":
-                EgiftProducer.main(args);
-                break;
             case "producer":
                 SQLProducer.main(args);
-                break;
-            case "consumer":
-                SQLConsumer.main(args);
                 break;
             default:
                 throw new IllegalArgumentException("Don't know how to do " + args[0]);

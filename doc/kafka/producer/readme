@@ -3,7 +3,7 @@
 Change bootstrap servers for kafka in src/main/resources/producer.props
 After 'bootstrap.servers=', add kafka servers and port.
 For example, we can change like below:
-bootstrap.servers=192.168.7.120:9091,192.168.7.108:9091
+bootstrap.servers=192.168.7.120:9092,192.168.7.108:9092
 
 Kafka will first connect to the first kafka server in the list.
 If Kafka cannot connect to the first kafka server, it will connect to
