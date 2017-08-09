@@ -6,7 +6,7 @@ import java.io.IOException;
  */
 public class SQLRunner {
 
-    public final static String TOPIC = "jaguar-kafka-Example1";
+    public final static String TOPIC = "jaguar-kafka-Example";
 
     public static void main(String[] args) throws IOException {
         if (args.length < 1) {
