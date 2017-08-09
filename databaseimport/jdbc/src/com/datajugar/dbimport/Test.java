@@ -18,7 +18,7 @@ public class Test {
 
     	String appConf = System.getProperty("app.conf");
     	if (appConf == null) {
-    		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> com.datajugar.dataimport.Test");
+    		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> com.datajugar.dbimport.Test");
     		return;
     	}
     	
