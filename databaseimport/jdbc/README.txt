@@ -11,5 +11,5 @@ Testing:
 
 1) create/update a property file 'app.conf'
 
-2) run: java -cp lib/mysql-connector-java-5.1.43-bin.jar:lib/jaguar-jdbc-2.0.jar:build/test.jar -Dapp.conf=app.conf com.datajugar.dbimport.Test
+2) run: java -cp lib/mysql-connector-java-5.1.43-bin.jar:lib/jaguar-jdbc-2.0.jar:build/test.jar -Dapp.conf=app.conf com.datajaguar.dbimport.ImportToJaguar
 
