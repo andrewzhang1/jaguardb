@@ -46,7 +46,7 @@ public class Importer {
         
         // target database
         url = appProp.getProperty("target_jdbc_url") + appProp.getProperty("target_db");
-        System.out.println("target" + url);
+        System.out.println("target " + url);
         user = appProp.getProperty("target_user");
         password = appProp.getProperty("target_password");
         //String table = appProp.getProperty("source_table");
