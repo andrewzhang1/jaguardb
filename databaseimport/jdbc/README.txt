@@ -14,8 +14,8 @@ Compiling:
 Testing:
 ===================================================================
 
-0) assume the table is already created with correct columns in jaguar. The order of 
-columns in the table is same as in the table in the source tatabase.
+0) assume the table is already created with correct columns in the target database. The order of 
+columns in the table is same as in the source database.
 
 1) create/update a property file 'app.conf'
 
