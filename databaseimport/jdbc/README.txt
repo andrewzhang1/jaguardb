@@ -21,5 +21,5 @@ columns in the table is same as in the source database.
 
 2) run: 
 
-    java -cp lib/mysql-connector-java-5.1.43-bin.jar:lib/jaguar-jdbc-2.0.jar:build/test.jar -Dapp.conf=app.conf com.jaguar.dbimport.Importer
+    java -cp lib/mysql-connector-java-5.1.43-bin.jar:lib/jaguar-jdbc-2.0.jar:build/dbimport.jar -Dapp.conf=app.conf com.jaguar.dbimport.Importer
 
