@@ -1,4 +1,11 @@
 
+Jaguar 2.7.2 08/12/2017
+--------------------------------------------------------------
+. Fixed bugs in select and memory buffer
+
+Jaguar 2.7.1 08/04/2017
+--------------------------------------------------------------
+. Added inner join (or simply join) of two tables in Jaguar
 Jaguar 2.7.1 08/04/2017
 --------------------------------------------------------------
 . Added inner join (or simply join) of two tables in Jaguar
