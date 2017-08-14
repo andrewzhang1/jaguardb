@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="test" default="all" basedir="./">
+<project name="dbimport" default="all" basedir="./">
 
 <property name="src.dir"          value="${basedir}/src"/>
 <property name="build.dir"        value="${basedir}/build"/>
@@ -27,7 +27,7 @@
 </target>
 
 <target name="all" depends="compile">
-    <jar destfile="${build.dir}/test.jar">
+    <jar destfile="${build.dir}/dbimport.jar">
             <fileset dir="${classes.dir}">
                 <include name="com/**"/>
             </fileset>
