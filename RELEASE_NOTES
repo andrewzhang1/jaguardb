@@ -1,4 +1,12 @@
 
+Jaguar 2.7.3 08/17/2017
+--------------------------------------------------------------
+. Added support for SSD STORAGE_TYPE=SSD in conf/server.conf
+  so that Jaguar uses less memory and leverage SSD's fast speed
+. Added Hash Join: a small table (<=500K rows) is loaded in memory
+  for two-table join
+. Fixed a bug in deleting many rows
+
 Jaguar 2.7.2 08/12/2017
 --------------------------------------------------------------
 . Fixed bugs in select and memory buffer
