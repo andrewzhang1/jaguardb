@@ -89,7 +89,12 @@ public class TestHBase
         return (endTime-startTime)/1000;
 	}
 
-
+    /*
+	 Test the performence of Batch Put operation of HBase.
+     @param table  the Table to put data to
+	 @param count  how many rows to put into HBase
+     @return       how many seconds to cost
+	 */
     private static long testBatchPut(Table table, int count) throws Exception
 	{
 		Put put = new Put(Bytes.toBytes("r1"));
@@ -97,14 +102,15 @@ public class TestHBase
 		List<Row> batch = new ArrayList<Row>();
 		long startTime = System.currentTimeMillis();
 		System.out.println("Begin Batch putting " + count + " data rows to HBase ...");
+		Object[] tempResult = new Object[10000];
 		for (int i=1; i<=count; i++) {
 		    put = new Put(Bytes.toBytes("r" + String.format("%031d",i)));
 			value = "12345678901234567890123456789012345678901234567890123456789012345678";
 	        put.addColumn(Bytes.toBytes("c1"), Bytes.toBytes("q1"), Bytes.toBytes(value));
 			batch.add(put);
 			if (i%10000 == 0) {
-				table.batch(batch, new Object[10000]);
-				batch = new ArrayList<Row>();
+				table.batch(batch, tempResult);
+				batch.clear();
 			}
 		}
 		long endTime = System.currentTimeMillis();
@@ -112,11 +118,8 @@ public class TestHBase
 		System.out.print( (endTime-startTime)/1000 );
 		System.out.println("s");
 		return (endTime-startTime)/1000;
-
-		
-
-
 	}
+
     /*
      Test the performence of Get operation of HBase.
      @param table  the Table to conduct Get operation on
