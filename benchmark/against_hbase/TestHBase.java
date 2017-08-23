@@ -101,9 +101,12 @@ public class TestHBase
 		    put = new Put(Bytes.toBytes("r" + String.format("%031d",i)));
 			value = "12345678901234567890123456789012345678901234567890123456789012345678";
 	        put.addColumn(Bytes.toBytes("c1"), Bytes.toBytes("q1"), Bytes.toBytes(value));
-			batch.add(put);	
+			batch.add(put);
+			if (i%10000 == 0) {
+				table.batch(batch, new Object[10000]);
+				batch = new ArrayList<Row>();
+			}
 		}
-		table.batch(batch, new Object[count]);
 		long endTime = System.currentTimeMillis();
 		System.out.print("Batch Insert " + count + " data entries to HBase : " );
 		System.out.print( (endTime-startTime)/1000 );
