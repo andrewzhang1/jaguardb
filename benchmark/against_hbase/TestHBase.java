@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -24,7 +25,7 @@ import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 public class TestHBase 
 {
     private static final int COUNTPUT = 10000000; // how many times to do PUT
-	private static final int COUNTGET = 1000000; // how many times to do GET
+	private static final int COUNTGET = 3000000; // how many times to do GET
     public static void main (String[] args) 
 	{
 		try {    
@@ -32,6 +33,7 @@ public class TestHBase
 		    Connection connection = ConnectionFactory.createConnection(config);
 		
             String tableName = "test";
+		    
             Admin admin = connection.getAdmin();
             if ( admin.isTableAvailable(TableName.valueOf(tableName)) ) {
 			    System.out.println("HBase Table " + tableName + " exists.");
@@ -48,12 +50,13 @@ public class TestHBase
 			System.out.println("Table " + tableName + " created successfully.");
 			Table table = connection.getTable(TableName.valueOf(tableName));
             
-            long timePut = testPut(table, COUNTPUT);
-            
-			long timeGet = testGet(table, COUNTGET);
+            //long timePut = testPut(table, COUNTPUT);
+            long timeBatchPut = testBatchPut(table, COUNTPUT);
+			//long timeGet = testGet(table, COUNTGET);
 			System.out.println("\nSummary: ");
-            System.out.println("Insert " + COUNTPUT + " data rows to HBase : " + timePut + "s." );
-            System.out.println("Get " + COUNTGET+ " data rows from HBase: "  + timeGet + "s." );
+            //System.out.println("Insert " + COUNTPUT + " data rows to HBase : " + timePut + "s." );
+			System.out.println("Batch Insert " + COUNTPUT + " data rows to HBase : " + timeBatchPut + "s." );
+            //System.out.println("Get " + COUNTGET+ " data rows from HBase: "  + timeGet + "s." );
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -85,7 +88,32 @@ public class TestHBase
         System.out.println("s");
         return (endTime-startTime)/1000;
 	}
-    
+
+
+    private static long testBatchPut(Table table, int count) throws Exception
+	{
+		Put put = new Put(Bytes.toBytes("r1"));
+		String value = "";
+		List<Row> batch = new ArrayList<Row>();
+		long startTime = System.currentTimeMillis();
+		System.out.println("Begin Batch putting " + count + " data rows to HBase ...");
+		for (int i=1; i<=count; i++) {
+		    put = new Put(Bytes.toBytes("r" + String.format("%031d",i)));
+			value = "12345678901234567890123456789012345678901234567890123456789012345678";
+	        put.addColumn(Bytes.toBytes("c1"), Bytes.toBytes("q1"), Bytes.toBytes(value));
+			batch.add(put);	
+		}
+		table.batch(batch, new Object[count]);
+		long endTime = System.currentTimeMillis();
+		System.out.print("Batch Insert " + count + " data entries to HBase : " );
+		System.out.print( (endTime-startTime)/1000 );
+		System.out.println("s");
+		return (endTime-startTime)/1000;
+
+		
+
+
+	}
     /*
      Test the performence of Get operation of HBase.
      @param table  the Table to conduct Get operation on
