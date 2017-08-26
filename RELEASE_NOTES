@@ -1,4 +1,9 @@
 
+Jaguar 2.7.4 08/26/2017
+--------------------------------------------------------------
+. Added support for Windows client dll
+. Fixed bug in deleting records
+
 Jaguar 2.7.3 08/17/2017
 --------------------------------------------------------------
 . Added support for SSD STORAGE_TYPE=SSD in conf/server.conf
