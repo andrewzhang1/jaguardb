@@ -1,4 +1,11 @@
 
+Jaguar 2.7.6 09/05/2017
+--------------------------------------------------------------
+. Fixed bug in float columns
+. Fixed bug in timeout print
+. Fixed bug in shell scripts
+. Added support for scientiic notation
+
 Jaguar 2.7.5 09/02/2017
 --------------------------------------------------------------
 . Added support for Windows server
