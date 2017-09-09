@@ -15,22 +15,22 @@ import java.util.Properties;
 public class Sync {
     public static void main(String[] args) throws Exception {
 
-    	String appConf = System.getProperty("app.conf");
-    	if (appConf == null) {
-    		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Sync.class.getName());
-    		return;
-    	}
-    	
-    	Properties appProp = new Properties();
-    	appProp.load(new FileReader(appConf));
-    	
-    	// load Jaguar driver
-    	try {
-    		Class.forName("com.jaguar.jdbc.JaguarDriver");
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
+        String appConf = System.getProperty("app.conf");
+        if (appConf == null) {
+            System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Sync.class.getName());
+            return;
+        }
+        
+        Properties appProp = new Properties();
+        appProp.load(new FileReader(appConf));
+        
+        // load Jaguar driver
+        try {
+            Class.forName("com.jaguar.jdbc.JaguarDriver");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
  
         // source database
         String url = appProp.getProperty("source_jdbc_url") + appProp.getProperty("source_db");
@@ -54,36 +54,36 @@ public class Sync {
         targetDB.init();
         
         String changeLog = appProp.getProperty("change_log");
-        String startId = appProp.getProperty("start_id");
+        String startId = appProp.getProperty("start_change_log_id");
         
         Statement st = sourceDB.getConnection().createStatement();
         String sql = "select * from " + changeLog + " where id >= " + startId;
 
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
-        	System.out.println("id=" + rs.getObject("id"));
-        	ResultSet rs2 = sourceDB.doQuery(rs);
-        	if (rs2.next()) {
-        		ResultSet rs3 = targetDB.doQuery(rs);
-        		if (rs3.next()) {
-        			targetDB.doUpdate(rs2);
-        		}
-        		else {
-        			targetDB.doInsert(rs2);
-        		}
-        		rs3.close();
-        	}
-        	else {
-        		targetDB.doDelete(rs);
-        	}
-		rs2.close();
+            System.out.println("id=" + rs.getObject("id"));
+            ResultSet rs2 = sourceDB.doQuery(rs);
+            if (rs2.next()) {
+                ResultSet rs3 = targetDB.doQuery(rs);
+                if (rs3.next()) {
+                    targetDB.doUpdate(rs2);
+                }
+                else {
+                    targetDB.doInsert(rs2);
+                }
+                rs3.close();
+            }
+            else {
+                targetDB.doDelete(rs);
+            }
+        rs2.close();
         }
         
         st.close();
         rs.close();
         sourceDB.close();
         targetDB.close();
-        	
+            
         System.out.println("done");
 
     }
