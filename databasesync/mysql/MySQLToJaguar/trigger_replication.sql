@@ -14,12 +14,12 @@ You can create a table123_trigger_table to capture the changes in table123.
 MySQL table:
 drop table if exists table123_trigger_table;
 create table table123_trigger_table (
-    ts datetime,
+    ts_ datetime,
     nid int,
     addr varchar(64),
 	phone varchar(16),
-    action char(1),
-	primary key( ts, nid )
+    action_ char(1),
+	primary key( ts_, nid )
 );
 
 
@@ -50,7 +50,7 @@ DROP TRIGGER IF EXISTS after_table123_delete;
 CREATE TRIGGER after_table123_delete AFTER  DELETE ON table123 FOR EACH ROW
 BEGIN
      INSERT INTO table123_trigger_table
-	     set ts = NOW(), nid = OLD.nid, action='D';
+	     set ts_ = NOW(), nid = OLD.nid, action_='D';
 END$$
 DELIMITER ;
 

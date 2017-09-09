@@ -11,11 +11,12 @@ create table table123
 
 drop table table123_trigger_table;
 create table table123_trigger_table (
-    ts timestamp,
+    ts_ timestamp,
     nid int,
     addr varchar(64),
 	phone varchar(16),
-    action char(1)
+    action_ char(1),
+	primary key (ts_, nid );
 );
 
 
