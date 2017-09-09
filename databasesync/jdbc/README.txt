@@ -20,7 +20,7 @@ Testing:
 ===================================================================
 
 0) assume the table is already created with correct columns in the target database. The order of 
-columns in the table is same as in the source database.
+columns in the table is same as in the source database. there is a trigger table the logs keys of any changes on the table.
 
 1) create/update a property file 'app.conf'
 
