@@ -5,7 +5,7 @@ source_user=test
 source_password=test
 key_columns=name
 change_log=pet_update
-start_id=1
+start_change_log_id=1
 
 
 target_jdbc_url=jdbc:jaguar://localhost:4444/
