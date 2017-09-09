@@ -76,6 +76,7 @@ public class Sync {
         	else {
         		targetDB.doDelete(rs);
         	}
+		rs2.close();
         }
         
         st.close();
