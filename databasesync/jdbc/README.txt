@@ -4,9 +4,14 @@ Java program to sync data from any database that supports JDBC
 Compiling:
 ===================================================================
 
-1) install ant if not already. Make ant part of PATH
-	export PATH=$PATH:../../util/ant/bin
-
+1) install ant if not already. 
+	1) install ant if not already.
+        Steps to install ant to your home directory. you may use a different version of ant.
+        a. download apache-ant-1.10.1-bin.tar.gz to your home directory
+        b. run gunzip apache-ant-1.10.1-bin.tar.gz
+        c. add export ANT_HOME=~/apache-ant-1.10.1 to .bashrc
+        d. add export PATH=$PATH:$ANT_HOME/bin to .bashrc
+        e. run . .bashrc
 
 2) run ant
 
