@@ -11,13 +11,18 @@ create table table123
 
 drop table table123_trigger_table;
 create table table123_trigger_table (
+    id_ int,
     ts_ timestamp,
+    action_ char(1),
     nid int,
     addr varchar(64),
 	phone varchar(16),
-    action_ char(1),
-	primary key (ts_, nid );
 );
+
+
+drop sequence table123_trigger_table_seq 
+
+create sequence table123_trigger_table_seq start with 1
 
 
 Then you can create three triggers to record the changes of table123 into table123_trigger_table:
@@ -27,11 +32,13 @@ CREATE OR REPLACE TRIGGER after_table123_insert AFTER INSERT ON table123
  FOR EACH ROW
  BEGIN
     INSERT INTO table123_trigger_table values ( 
-				sysdate, 
+			        table123_trigger_table_seq.nextval,	
+				sysdate,
+				'I', 
 				:new.nid, 
 				:new.addr, 
-				:new.phone, 
-				'I' );
+				:new.phone 
+				);
  END;
  /
 
@@ -39,24 +46,28 @@ CREATE OR REPLACE TRIGGER after_table123_insert AFTER INSERT ON table123
 CREATE OR REPLACE TRIGGER after_table123_update AFTER  UPDATE ON table123 
  FOR EACH ROW
  BEGIN
-    INSERT INTO table123_trigger_table values ( 
-				sysdate, 
+    INSERT INTO table123_trigger_table values (
+				table123_trigger_table_seq.nextval, 
+				sysdate,
+				'U' 
 				:new.nid, 
 				:new.addr, 
-				:new.phone, 
-				'U' );
+				:new.phone
+				);
  END;
  /
 
-CREATE OR REPLACE TRIGGER after_table123_delete AFTER  DELETE ON table123 
+CREATE OR REPLACE TRIGGER before_table123_delete before  DELETE ON table123 
  FOR EACH ROW
  BEGIN
-    INSERT INTO table123_trigger_table values ( 
-				sysdate, 
-				:new.nid, 
-				:new.addr, 
-				:new.phone, 
-				'D' );
+    INSERT INTO table123_trigger_table values (
+				table123_trigger_table_seq.nextval, 
+				sysdate,
+				'D', 
+				:old.nid, 
+				:old.addr, 
+				:old.phone 
+				);
  END;
  /
 
