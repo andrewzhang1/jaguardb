@@ -54,7 +54,9 @@ public class Sync {
             String url = appProp.getProperty("source_jdbc_url");
             url = url + appProp.getProperty("source_db");
 
-            System.out.println("source " + url);
+            if (DEBUG) {
+                System.out.println("source " + url);
+            }
             
             String user = appProp.getProperty("source_user");
             String password = appProp.getProperty("source_password");
