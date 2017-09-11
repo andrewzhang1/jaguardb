@@ -52,9 +52,8 @@ public class Sync {
      
             // source database
             String url = appProp.getProperty("source_jdbc_url");
-            if (!url.contains("oracle")) {
-                url = url + appProp.getProperty("source_db");
-            }
+            url = url + appProp.getProperty("source_db");
+
             System.out.println("source " + url);
             
             String user = appProp.getProperty("source_user");
@@ -76,9 +75,8 @@ public class Sync {
             
             // target database
             url = appProp.getProperty("target_jdbc_url");
-            if (!url.contains("oracle")) {
-                url = url + appProp.getProperty("target_db");
-            }
+            url = url + appProp.getProperty("target_db");
+
             if (DEBUG) {
                 System.out.println("target" + url);
             }
