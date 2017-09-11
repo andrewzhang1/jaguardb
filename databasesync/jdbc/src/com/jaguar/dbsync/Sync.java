@@ -68,9 +68,9 @@ public class Sync {
             String sql = "select * from " + table;
             ResultSet rs = st.executeQuery(sql);
             ResultSetMetaData meta = rs.getMetaData();
-            List<String> columnNames = new ArrayList<String>();
+            String[] columnNames = new String[meta.getColumnCount()];
             for(int i = 1; i <= meta.getColumnCount(); i++) {
-                columnNames.add(meta.getColumnName(i).toLowerCase());
+                columnNames[i - 1] = meta.getColumnName(i);
             }
             st.close();
             rs.close();
@@ -85,7 +85,7 @@ public class Sync {
             user = appProp.getProperty("target_user");
             password = appProp.getProperty("target_password");
             
-            DBAccess db = new DBAccess(url, user, password, table, keys, columnNames.toArray(new String[columnNames.size()]));
+            DBAccess db = new DBAccess(url, user, password, table, keys, columnNames);
             db.init();
             
             String changeLog = appProp.getProperty("change_log");
