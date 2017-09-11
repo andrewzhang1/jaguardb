@@ -3,11 +3,10 @@ package com.jaguar.dbsync;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -21,9 +20,6 @@ public class Sync {
             return;
         }
         
-        Properties appProp = new Properties();
-        appProp.load(new FileReader(appConf));
-        
         // load Jaguar driver
         try {
             Class.forName("com.jaguar.jdbc.JaguarDriver");
@@ -31,58 +27,99 @@ public class Sync {
         catch (Exception e) {
             e.printStackTrace();
         }
- 
-        // source database
-        String url = appProp.getProperty("source_jdbc_url") + appProp.getProperty("source_db");
-        System.out.println("source " + url);
         
-        String user = appProp.getProperty("source_user");
-        String password = appProp.getProperty("source_password");
-        String table = appProp.getProperty("source_table");
-        List<String> keys = Arrays.asList(appProp.getProperty("key_columns").split(","));
+        Long startId = null;
+        boolean isFirst = true;
+        boolean notDone = false;
         
-        DBAccess sourceDB = new DBAccess(url, user, password, table, keys);
-        sourceDB.init();
-        
-        // target database
-        url = appProp.getProperty("target_jdbc_url") + appProp.getProperty("target_db");
-        System.out.println("target" + url);
-        user = appProp.getProperty("target_user");
-        password = appProp.getProperty("target_password");
-        
-        DBAccess targetDB = new DBAccess(url, user, password, table, keys);
-        targetDB.init();
-        
-        String changeLog = appProp.getProperty("change_log");
-        String startId = appProp.getProperty("start_change_log_id");
-        
-        Statement st = sourceDB.getConnection().createStatement();
-        String sql = "select * from " + changeLog + " where id >= " + startId;
-
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            System.out.println("id=" + rs.getObject("id"));
-            ResultSet rs2 = sourceDB.doQuery(rs);
-            if (rs2.next()) {
-                ResultSet rs3 = targetDB.doQuery(rs);
-                if (rs3.next()) {
-                    targetDB.doUpdate(rs2);
-                }
-                else {
-                    targetDB.doInsert(rs2);
-                }
-                rs3.close();
+        while (!notDone) {
+            Properties appProp = new Properties();
+            appProp.load(new FileReader(appConf));
+          
+            if (Boolean.parseBoolean(appProp.getProperty("stop"))) {
+                System.out.println("finished at id = " + startId);
+                notDone = true;
+                break;
             }
-            else {
-                targetDB.doDelete(rs);
+            
+            if (isFirst) {
+                startId = Long.parseLong(appProp.getProperty("start_id"));
+                isFirst = false;
             }
-        rs2.close();
+     
+            // source database
+            String url = appProp.getProperty("source_jdbc_url");
+            if (!url.contains("oracle")) {
+                url = url + appProp.getProperty("source_db");
+            }
+            System.out.println("source " + url);
+            
+            String user = appProp.getProperty("source_user");
+            String password = appProp.getProperty("source_password");
+            String table = appProp.getProperty("source_table");
+            String[] keys = appProp.getProperty("keys").split(",");
+            
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement st = conn.createStatement();
+            String sql = "select * from " + table;
+            ResultSet rs = st.executeQuery(sql);
+            ResultSetMetaData meta = rs.getMetaData();
+            List<String> columnNames = new ArrayList<String>();
+            for(int i = 1; i <= meta.getColumnCount(); i++) {
+                columnNames.add(meta.getColumnName(i).toLowerCase());
+            }
+            st.close();
+            rs.close();
+            
+            // target database
+            url = appProp.getProperty("target_jdbc_url");
+            if (!url.contains("oracle")) {
+                url = url + appProp.getProperty("target_db");
+            }
+            System.out.println("target" + url);
+            user = appProp.getProperty("target_user");
+            password = appProp.getProperty("target_password");
+            
+            DBAccess db = new DBAccess(url, user, password, table, keys, columnNames.toArray(new String[columnNames.size()]));
+            db.init();
+            
+            String changeLog = appProp.getProperty("change_log");
+             
+            st = conn.createStatement();
+            sql = "select * from " + changeLog + " where id_ >= " + startId;
+    
+            rs = st.executeQuery(sql);
+            while (rs.next()) {
+                String action = rs.getString("action_");
+                System.out.println("id=" + rs.getObject("id_") + "action=" + action);
+                if ("I".equals(action)) {
+                    db.doDelete(rs);
+                    db.doInsert(rs);
+                }
+                else if ("U".equals(action)) {
+                    ResultSet rs2 = db.doQuery(rs);
+                    if (rs2.next()) {
+                        db.doUpdate(rs);
+                    }
+                    else {
+                        db.doInsert(rs);
+                    }
+                    rs2.close();
+                }
+                else if ("D".equals(action)) {
+                    db.doDelete(rs);
+                }
+                
+                startId = rs.getLong("id_") + 1;
+     
+            }
+            
+            st.close();
+            rs.close();
+            db.close();
+            System.out.println("sleep ...");
+            Thread.sleep(Long.parseLong(appProp.getProperty("sleep_in_milis")));
         }
-        
-        st.close();
-        rs.close();
-        sourceDB.close();
-        targetDB.close();
             
         System.out.println("done");
 

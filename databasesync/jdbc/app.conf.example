@@ -1,12 +1,12 @@
-source_jdbc_url=jdbc:mysql://localhost:3306/
-source_db=mydb
-source_table=pet
+source_jdbc_url=jdbc:oracle:thin:@//localhost:1522/test
+#source_db=mydb
+source_table=table123
 source_user=test
 source_password=test
-key_columns=name
-change_log=pet_update
-start_change_log_id=1
-
+keys=nid
+change_log=table123_trigger_table
+start_id=5
+sleep_in_milis=9000
 
 target_jdbc_url=jdbc:jaguar://localhost:4444/
 target_db=test

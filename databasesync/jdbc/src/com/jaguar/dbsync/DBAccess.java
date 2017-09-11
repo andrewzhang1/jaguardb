@@ -4,40 +4,33 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
 
 public class DBAccess {
     private String jdbcUrl;
     private String user;
     private String password;
     private String table;
-    private List<String> keys;
+    private String[] keys;
     private Connection conn;
     private PreparedStatement queryPS;
     private PreparedStatement insertPS;
     private PreparedStatement updatePS;
     private PreparedStatement deletePS;
-    private ResultSetMetaData meta;
+    private String[] columnNames;
     
-    public DBAccess(String jdbcUrl, String user, String password, String table, List<String> keys) {
+    public DBAccess(String jdbcUrl, String user, String password, String table, String[] keys, String[] columnNames) {
         this.jdbcUrl = jdbcUrl;
         this.user = user;
         this.password = password;
         this.table = table;
         this.keys = keys;
+        this.columnNames = columnNames;
     }
     
     public void init() throws Exception {
         conn = DriverManager.getConnection(jdbcUrl, user, password);
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("select * from " + table);
-        meta = rs.getMetaData();
-        st.close();
-        rs.close();
-        
+       
         // query statement
         StringBuilder sb = new StringBuilder("select * from " + table + " where ");
         boolean isFirst = true;
@@ -54,9 +47,21 @@ public class DBAccess {
         queryPS = conn.prepareStatement(sb.toString());
         
         // insert statement
-        sb = new StringBuilder("insert into " + table + " values(");
+        sb = new StringBuilder("insert into " + table + " (");
         isFirst = true;
-        for(int i = 1; i <= meta.getColumnCount(); i++) {
+        for(int i = 0; i < columnNames.length; i++) {
+            if (isFirst) {
+                sb.append(columnNames[i]);
+                isFirst = false;
+            }
+            else {
+                sb.append("," + columnNames[i]);
+            }
+        }
+       
+        sb.append(") values (");
+        isFirst = true;
+        for(int i = 0; i < columnNames.length; i++) {
             if (isFirst) {
                 sb.append("?");
                 isFirst = false;
@@ -75,14 +80,14 @@ public class DBAccess {
         // update statement
         sb = new StringBuilder("update " + table + " set ");
         isFirst = true;
-        for(int i = 1; i <= meta.getColumnCount(); i++) {
-            if (!keys.contains(meta.getColumnName(i))) {
+        for(int i = 0; i < columnNames.length; i++) {
+            if (!isKey(columnNames[i])) {
                 if (isFirst) {
-                    sb.append(meta.getColumnName(i)).append("=?");
+                    sb.append(columnNames[i]).append("=?");
                     isFirst = false;
                 }
                 else {
-                    sb.append("," + meta.getColumnName(i)).append("=?");
+                    sb.append("," + columnNames[i]).append("=?");
                 }
             }
         }
@@ -138,8 +143,8 @@ public class DBAccess {
     
     public int doInsert(ResultSet rs) throws SQLException {
         insertPS.clearParameters();
-        for(int i = 1; i <= meta.getColumnCount(); i++) {
-            insertPS.setObject(i, rs.getObject(i));
+        for(int i = 0; i < columnNames.length; i++) {
+            insertPS.setObject(i+1, rs.getObject(columnNames[i]));
         }
         
         return insertPS.executeUpdate();
@@ -148,9 +153,9 @@ public class DBAccess {
     public int doUpdate(ResultSet rs) throws SQLException {
         updatePS.clearParameters();
         int j = 1;
-        for(int i = 1; i<= meta.getColumnCount(); i++) {
-            if (!keys.contains(meta.getColumnName(i))) {
-                updatePS.setObject(j, rs.getObject(i));
+        for(int i = 0; i < columnNames.length; i++) {
+            if (!isKey(columnNames[i])) {
+                updatePS.setObject(j, rs.getObject(columnNames[i]));
                 j++;
             }
         }
@@ -177,6 +182,16 @@ public class DBAccess {
         updatePS.close();
         deletePS.close();
         conn.close();
+    }
+    
+    private boolean isKey(String columnName) {
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].equalsIgnoreCase(columnName)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
 
