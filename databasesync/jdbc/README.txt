@@ -26,5 +26,5 @@ columns in the table is same as in the source database. there is a trigger table
 
 2) run: 
 
-    java -cp lib/mysql-connector-java-5.1.43-bin.jar:lib/jaguar-jdbc-2.0.jar:build/dbsync.jar -Dapp.conf=app.conf com.jaguar.dbsync.Sync
+    java -cp lib/ojdbc6.jar:lib/jaguar-jdbc-2.0.jar:build/dbsync.jar -Dapp.conf=app.conf com.jaguar.dbsync.Sync
 

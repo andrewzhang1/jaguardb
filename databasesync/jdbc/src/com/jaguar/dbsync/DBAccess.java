@@ -19,6 +19,8 @@ public class DBAccess {
     private PreparedStatement deletePS;
     private String[] columnNames;
     
+    private static final boolean DEBUG = System.getProperty("debug") != null;
+    
     public DBAccess(String jdbcUrl, String user, String password, String table, String[] keys, String[] columnNames) {
         this.jdbcUrl = jdbcUrl;
         this.user = user;
@@ -43,7 +45,9 @@ public class DBAccess {
                  sb.append(" AND " + key +  "=?");
             }
         }
-        System.out.println("query st: " + sb.toString());
+        if (DEBUG) {
+            System.out.println("query st: " + sb.toString());
+        }
         queryPS = conn.prepareStatement(sb.toString());
         
         // insert statement
@@ -73,7 +77,9 @@ public class DBAccess {
         
         sb.append(")");
         
-        System.out.println("insert st: " + sb.toString());
+        if (DEBUG) {
+            System.out.println("insert st: " + sb.toString());
+        }
         
         insertPS = conn.prepareStatement(sb.toString());
         
@@ -104,7 +110,9 @@ public class DBAccess {
             }
         }
 
-        System.out.println("update st: " + sb.toString());
+        if (DEBUG) {
+            System.out.println("update st: " + sb.toString());
+        }
         updatePS = conn.prepareStatement(sb.toString());
         
         // delete statement
@@ -121,7 +129,9 @@ public class DBAccess {
             }
         }
  
-        System.out.println("delete st: " + sb.toString());
+        if (DEBUG) {
+            System.out.println("delete st: " + sb.toString());
+        }
         deletePS = conn.prepareStatement(sb.toString());
         
     }

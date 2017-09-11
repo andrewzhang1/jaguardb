@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Properties;
 
 public class Sync {
+    private static final boolean DEBUG = System.getProperty("debug") != null;
+    
     public static void main(String[] args) throws Exception {
-
+        
         String appConf = System.getProperty("app.conf");
         if (appConf == null) {
             System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Sync.class.getName());
@@ -31,6 +33,7 @@ public class Sync {
         Long startId = null;
         boolean isFirst = true;
         boolean notDone = false;
+        int total = 0;
         
         while (!notDone) {
             Properties appProp = new Properties();
@@ -76,7 +79,9 @@ public class Sync {
             if (!url.contains("oracle")) {
                 url = url + appProp.getProperty("target_db");
             }
-            System.out.println("target" + url);
+            if (DEBUG) {
+                System.out.println("target" + url);
+            }
             user = appProp.getProperty("target_user");
             password = appProp.getProperty("target_password");
             
@@ -91,7 +96,9 @@ public class Sync {
             rs = st.executeQuery(sql);
             while (rs.next()) {
                 String action = rs.getString("action_");
-                System.out.println("id=" + rs.getObject("id_") + "action=" + action);
+                if (DEBUG) {
+                    System.out.println("id=" + rs.getObject("id_") + "action=" + action);
+                }
                 if ("I".equals(action)) {
                     db.doDelete(rs);
                     db.doInsert(rs);
@@ -111,17 +118,20 @@ public class Sync {
                 }
                 
                 startId = rs.getLong("id_") + 1;
+                total++;
      
             }
             
             st.close();
             rs.close();
             db.close();
-            System.out.println("sleep ...");
+            if (DEBUG) {
+                System.out.println("sleep ...");
+            }
             Thread.sleep(Long.parseLong(appProp.getProperty("sleep_in_milis")));
         }
             
-        System.out.println("done");
+        System.out.println("Total rows updated: " + total);
 
     }
 
