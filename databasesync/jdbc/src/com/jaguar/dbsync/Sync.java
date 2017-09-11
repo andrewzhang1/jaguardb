@@ -36,15 +36,15 @@ public class Sync {
             Properties appProp = new Properties();
             appProp.load(new FileReader(appConf));
           
-            if (Boolean.parseBoolean(appProp.getProperty("stop"))) {
-                System.out.println("finished at id = " + startId);
-                notDone = true;
-                break;
-            }
-            
             if (isFirst) {
                 startId = Long.parseLong(appProp.getProperty("start_id"));
                 isFirst = false;
+            }
+            
+            if (Boolean.parseBoolean(appProp.getProperty("stop"))) {
+                System.out.println("next start id = " + startId);
+                notDone = true;
+                break;
             }
      
             // source database
