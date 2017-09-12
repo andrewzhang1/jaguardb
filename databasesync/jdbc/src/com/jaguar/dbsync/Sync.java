@@ -30,8 +30,6 @@ public class Sync {
             e.printStackTrace();
         }
         
-        Long startId = null;
-        boolean isFirst = true;
         boolean notDone = false;
         int total = 0;
         
@@ -39,13 +37,7 @@ public class Sync {
             Properties appProp = new Properties();
             appProp.load(new FileReader(appConf));
           
-            if (isFirst) {
-                startId = Long.parseLong(appProp.getProperty("start_id"));
-                isFirst = false;
-            }
-            
             if (Boolean.parseBoolean(appProp.getProperty("stop"))) {
-                System.out.println("next start id = " + startId);
                 notDone = true;
                 break;
             }
@@ -91,13 +83,14 @@ public class Sync {
             String changeLog = appProp.getProperty("change_log");
              
             st = conn.createStatement();
-            sql = "select * from " + changeLog + " where id_ >= " + startId;
+            sql = "select * from " + changeLog + " where status_ != 'D' order by ts_";
     
             rs = st.executeQuery(sql);
             while (rs.next()) {
                 String action = rs.getString("action_");
+                String id = "" + rs.getObject("id_");;
                 if (DEBUG) {
-                    System.out.println("id=" + rs.getObject("id_") + "action=" + action);
+                    System.out.println("id=" + id + "action=" + action);
                 }
                 if ("I".equals(action)) {
                     db.doDelete(rs);
@@ -117,7 +110,9 @@ public class Sync {
                     db.doDelete(rs);
                 }
                 
-                startId = rs.getLong("id_") + 1;
+                //update status
+                st.executeUpdate("update " + table + " set status_ = 'D' where id_ = " + id);
+                
                 total++;
      
             }
