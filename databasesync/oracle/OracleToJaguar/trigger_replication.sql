@@ -17,6 +17,7 @@ create table table123_trigger_table (
     nid int,
     addr varchar(64),
 	phone varchar(16),
+    status_ char(1)
 );
 
 
@@ -37,7 +38,8 @@ CREATE OR REPLACE TRIGGER after_table123_insert AFTER INSERT ON table123
 				'I', 
 				:new.nid, 
 				:new.addr, 
-				:new.phone 
+				:new.phone,
+				'I' 
 				);
  END;
  /
@@ -49,10 +51,11 @@ CREATE OR REPLACE TRIGGER after_table123_update AFTER  UPDATE ON table123
     INSERT INTO table123_trigger_table values (
 				table123_trigger_table_seq.nextval, 
 				sysdate,
-				'U' 
+				'U', 
 				:new.nid, 
 				:new.addr, 
-				:new.phone
+				:new.phone,
+				'I'
 				);
  END;
  /
@@ -66,7 +69,8 @@ CREATE OR REPLACE TRIGGER before_table123_delete before  DELETE ON table123
 				'D', 
 				:old.nid, 
 				:old.addr, 
-				:old.phone 
+				:old.phone,
+				'I' 
 				);
  END;
  /
