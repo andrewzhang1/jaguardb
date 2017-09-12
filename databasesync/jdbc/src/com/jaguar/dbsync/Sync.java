@@ -111,7 +111,7 @@ public class Sync {
                 }
                 
                 //update status
-                st.executeUpdate("update " + table + " set status_ = 'D' where id_ = " + id);
+                st.executeUpdate("update " + changeLog + " set status_ = 'D' where id_ = " + id);
                 
                 total++;
      
