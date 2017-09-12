@@ -3,6 +3,7 @@ package com.jaguar.dbsync;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -81,6 +82,8 @@ public class Sync {
             db.init();
             
             String changeLog = appProp.getProperty("change_log");
+            
+            PreparedStatement updateLogPS = conn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
             st = conn.createStatement();
             sql = "select * from " + changeLog + " where status_ != 'D' order by ts_";
@@ -88,7 +91,7 @@ public class Sync {
             rs = st.executeQuery(sql);
             while (rs.next()) {
                 String action = rs.getString("action_");
-                String id = "" + rs.getObject("id_");;
+                Object id = rs.getObject("id_");
                 if (DEBUG) {
                     System.out.println("id=" + id + "action=" + action);
                 }
@@ -110,8 +113,10 @@ public class Sync {
                     db.doDelete(rs);
                 }
                 
-                //update status
-                st.executeUpdate("update " + changeLog + " set status_ = 'D' where id_ = " + id);
+                //update log status
+                updateLogPS.clearParameters();
+                updateLogPS.setObject(1, id);
+                updateLogPS.executeUpdate();
                 
                 total++;
      
@@ -119,6 +124,8 @@ public class Sync {
             
             st.close();
             rs.close();
+            updateLogPS.close();
+            conn.close();
             db.close();
             if (DEBUG) {
                 System.out.println("sleep ...");
