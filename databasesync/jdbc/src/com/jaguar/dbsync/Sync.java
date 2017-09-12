@@ -31,15 +31,15 @@ public class Sync {
             e.printStackTrace();
         }
         
-        boolean notDone = false;
+        boolean done = false;
         int total = 0;
         
-        while (!notDone) {
+        while (!done) {
             Properties appProp = new Properties();
             appProp.load(new FileReader(appConf));
           
             if (Boolean.parseBoolean(appProp.getProperty("stop"))) {
-                notDone = true;
+                done = true;
                 break;
             }
      
