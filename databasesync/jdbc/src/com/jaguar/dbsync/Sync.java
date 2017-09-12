@@ -92,9 +92,9 @@ public class Sync {
             while (rs.next()) {
                 String action = rs.getString("action_");
                 Object id = rs.getObject("id_");
-                if (DEBUG) {
-                    System.out.println("id=" + id + "action=" + action);
-                }
+
+                System.out.println("id=" + id + "action=" + action);
+
                 if ("I".equals(action)) {
                     db.doDelete(rs);
                     db.doInsert(rs);
