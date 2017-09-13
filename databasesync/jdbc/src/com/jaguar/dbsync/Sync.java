@@ -86,7 +86,7 @@ public class Sync {
             PreparedStatement updateLogPS = conn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
             st = conn.createStatement();
-            sql = "select * from " + changeLog + " where status_ != 'D' order by ts_";
+            sql = "select * from " + changeLog + " where status_ = 'I' order by ts_";
     
             rs = st.executeQuery(sql);
             while (rs.next()) {
