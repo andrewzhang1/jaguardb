@@ -5,7 +5,7 @@ source_user=test
 source_password=test
 keys=nid
 change_log=table123_trigger_table
-sleep_in_milis=9000
+sleep_in_milis=1000
 
 target_jdbc_url=jdbc:jaguar://localhost:4444/
 target_db=test

@@ -26,9 +26,9 @@ public class Sync {
         // load Jaguar driver
         try {
             Class.forName("com.jaguar.jdbc.JaguarDriver");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+			System.exit(1);
         }
         
         boolean done = false;
@@ -53,20 +53,20 @@ public class Sync {
             
             String user = appProp.getProperty("source_user");
             String password = appProp.getProperty("source_password");
-            String table = appProp.getProperty("source_table");
+            String table = appProp.getProperty("source_table"); 
             String[] keys = appProp.getProperty("keys").split(",");
             
             Connection conn = DriverManager.getConnection(url, user, password);
             Statement st = conn.createStatement();
             String sql = "select * from " + table;
-            ResultSet rs = st.executeQuery(sql);
-            ResultSetMetaData meta = rs.getMetaData();
+            ResultSet metars = st.executeQuery(sql);
+            ResultSetMetaData meta = metars.getMetaData();
             String[] columnNames = new String[meta.getColumnCount()];
             for(int i = 1; i <= meta.getColumnCount(); i++) {
                 columnNames[i - 1] = meta.getColumnName(i);
             }
             st.close();
-            rs.close();
+            metars.close();
             
             // target database
             url = appProp.getProperty("target_jdbc_url");
@@ -78,39 +78,33 @@ public class Sync {
             user = appProp.getProperty("target_user");
             password = appProp.getProperty("target_password");
             
-            DBAccess db = new DBAccess(url, user, password, table, keys, columnNames);
-            db.init();
+            DBAccess targetdb = new DBAccess(url, user, password, table, keys, columnNames);
+            targetdb.init();
             
             String changeLog = appProp.getProperty("change_log");
-            
             PreparedStatement updateLogPS = conn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
             st = conn.createStatement();
             sql = "select * from " + changeLog + " where status_ = 'I' order by ts_";
-    
-            rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
+				// rs is changelog result
                 String action = rs.getString("action_");
                 Object id = rs.getObject("id_");
-
                 System.out.println("id=" + id + "action=" + action);
-
                 if ("I".equals(action)) {
-                    db.doDelete(rs);
-                    db.doInsert(rs);
-                }
-                else if ("U".equals(action)) {
-                    ResultSet rs2 = db.doQuery(rs);
+                    targetdb.doDelete(rs);
+                    targetdb.doInsert(rs);
+                } else if ("U".equals(action)) {
+                    ResultSet rs2 = targetdb.doQuery(rs);  // ???
                     if (rs2.next()) {
-                        db.doUpdate(rs);
-                    }
-                    else {
-                        db.doInsert(rs);
+                        targetdb.doUpdate(rs);
+                    } else {
+                        targetdb.doInsert(rs);
                     }
                     rs2.close();
-                }
-                else if ("D".equals(action)) {
-                    db.doDelete(rs);
+                } else if ("D".equals(action)) {
+                    targetdb.doDelete(rs);
                 }
                 
                 //update log status
@@ -126,7 +120,7 @@ public class Sync {
             rs.close();
             updateLogPS.close();
             conn.close();
-            db.close();
+            targetdb.close();
             if (DEBUG) {
                 System.out.println("sleep ...");
             }
@@ -136,7 +130,5 @@ public class Sync {
         System.out.println("Total rows updated: " + total);
 
     }
-
-
 
 }
