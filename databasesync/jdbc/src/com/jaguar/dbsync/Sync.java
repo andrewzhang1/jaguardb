@@ -103,7 +103,7 @@ public class Sync {
             PreparedStatement updateLogPS = conn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
             st = conn.createStatement();
-            sql = "select * from " + changeLog + " where status_ = 'I' order by ts_";
+            sql = "select * from " + changeLog + " where status_ = 'I' ";
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
 				// rs is changelog result
@@ -113,8 +113,7 @@ public class Sync {
                 if (I.equals(action)) {
                     try {
                         targetdb.doInsert(rs);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         if (DEBUG) {
                             e.printStackTrace();
                         }
