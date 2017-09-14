@@ -14,6 +14,7 @@ Compiling:
 
 
 2) run ant
+   ./compile.sh
 
 
 Testing:

@@ -14,7 +14,7 @@ Compiling:
         e. run . .bashrc
 
 2) run ant
-   cp -f build/dbsync.jar lib/
+   ./compile.sh
 
 
 Testing:
