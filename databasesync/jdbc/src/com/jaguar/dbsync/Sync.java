@@ -66,7 +66,7 @@ public class Sync {
             ResultSetMetaData meta = metars.getMetaData();
             String[] columnNames = new String[meta.getColumnCount()];
             for(int i = 1; i <= meta.getColumnCount(); i++) {
-                columnNames[i - 1] = meta.getColumnName(i);
+                columnNames[i - 1] = meta.getColumnName(i).toLowerCase();
             }
             st.close();
             metars.close();
