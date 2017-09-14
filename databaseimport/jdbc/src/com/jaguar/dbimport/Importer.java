@@ -9,7 +9,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class Importer {
+public class Importer 
+{
     private static final String TARGET_PASSWORD = "target_password";
     private static final String TARGET_USER = "target_user";
     private static final String TARGET_DB = "target_db";
@@ -21,9 +22,10 @@ public class Importer {
     private static final String SOURCE_JDBC_URL = "source_jdbc_url";
     private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
     private static final String APP_CONF = "app.conf";
+    private static final String IMPORT_ROWS = "import_rows";
 
-    public static void main(String[] args) throws Exception {
-
+    public static void main(String[] args) throws Exception 
+	{
     	String appConf = System.getProperty(APP_CONF);
     	if (appConf == null) {
     		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Importer.class.getName());
@@ -36,83 +38,73 @@ public class Importer {
     	// load Jaguar driver
     	try {
     		Class.forName(COM_JAGUAR_JDBC_JAGUAR_DRIVER);
-    	}
-    	catch (Exception e) {
+    	} catch (Exception e) {
     		e.printStackTrace();
+			System.exit(1);
     	}
  
         // source database
-        String url = appProp.getProperty(SOURCE_JDBC_URL) + appProp.getProperty(SOURCE_DB);
-        System.out.println("source " + url);
+        String import_rows = appProp.getProperty(IMPORT_ROWS);
+		if ( null == import_rows ) import_rows = "0";
+		long importrows = Long.parseLong(import_rows, 10);
+        String srcurl = appProp.getProperty(SOURCE_JDBC_URL) + appProp.getProperty(SOURCE_DB);
+        System.out.println("sourceurl " + srcurl);
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
         String table = appProp.getProperty(SOURCE_TABLE);
-        Connection sconn = DriverManager.getConnection(url, user, password);
-        Statement st = sconn.createStatement();
-        ResultSet rs = st.executeQuery("select * from " + table);
-        ResultSetMetaData meta = rs.getMetaData();
-        System.out.println("column count=" + meta.getColumnCount());
-        for (int i = 1; i <= meta.getColumnCount(); i++) {
-            //System.out.println(meta.getColumnName(i) + " has type " + meta.getColumnType(i));
+        Connection sconn = DriverManager.getConnection(srcurl, user, password);
+        Statement srcst = sconn.createStatement();
+        ResultSet srcrs = srcst.executeQuery("select * from " + table);
+        ResultSetMetaData srcmeta = srcrs.getMetaData();
+        System.out.println("column count=" + srcmeta.getColumnCount());
+        for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
+            System.out.println( srcmeta.getColumnName(i) + " has type=" + srcmeta.getColumnType(i) + " typename=" + srcmeta.getColumnTypeName(i) );
         }
         
         // target database
-        url = appProp.getProperty(TARGET_JDBC_URL) + appProp.getProperty(TARGET_DB);
-        System.out.println("target" + url);
+        String targeturl = appProp.getProperty(TARGET_JDBC_URL) + appProp.getProperty(TARGET_DB);
+        System.out.println("targeturl " + targeturl);
         user = appProp.getProperty(TARGET_USER);
         password = appProp.getProperty(TARGET_PASSWORD);
-        //String table = appProp.getProperty("source_table");
-        Connection tconn = DriverManager.getConnection(url, user, password);
+        Connection tconn = DriverManager.getConnection( targeturl, user, password);
         
         // insert statement
-        StringBuilder sb = new StringBuilder("insert into " + table + " (");
-        boolean isFirst = true;
-        for(int i = 1; i <= meta.getColumnCount(); i++) {
-            if (isFirst) {
-                sb.append(meta.getColumnName(i).toLowerCase());
-                isFirst = false;
+        Statement tst = tconn.createStatement();
+        long goodrows = 0, badrows = 0;
+        while ( srcrs.next()) {
+        	StringBuilder sb = new StringBuilder("insert into " + table + " values (");
+            for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
+                Object o = srcrs.getObject(i);
+				if ( 1 == i ) {
+					sb.append( "'"+ o.toString() + "'" );
+				} else {
+					sb.append( ",'"+ o.toString() + "'" );
+				}
             }
-            else {
-                sb.append("," + meta.getColumnName(i).toLowerCase());
-            }
-        }
 
-        sb.append(") values (");
-        isFirst = true;
-        for(int i = 0; i < meta.getColumnCount(); i++) {
-            if (isFirst) {
-                sb.append("?");
-                isFirst = false;
-            }
-            else {
-                 sb.append(",?");
-            }
-        }
+			// add extra columns if needed
+			// sb.append( ",'extra1', 'extra2'" );
 
-        sb.append(")");
+			sb.append( ")");
 
-        System.out.println("insert st: " + sb.toString());
+            if ( tst.executeUpdate( sb.toString() ) > 0 ) {
+        		System.out.println( "OK " + sb.toString() );
+				++ goodrows;
+			} else {
+        		System.out.println( "ER " + sb.toString() );
+				++ badrows;
+			}
 
-        PreparedStatement ps = tconn.prepareStatement(sb.toString());
-        int rows = 0;
-        while (rs.next()) {
-        	ps.clearParameters();
-            for (int i = 1; i <= meta.getColumnCount(); i++) {
-                Object o = rs.getObject(i);
-                //System.out.println("class:" + o.getClass().getName() + ",value=" + o.toString());
-                ps.setObject(i, o);
-            }
-            ps.executeUpdate();
-            rows++;
-            //System.out.println("update=" + c);
+			if ( importrows > 0 ) {
+				if ( ( goodrows+badrows ) >= importrows ) {
+					break;
+				}
+			}
         }
         
         sconn.close();
         tconn.close();
         
-        System.out.println("total " + rows + " imported.");
+        System.out.println("total goodrows=" + goodrows + " imported. badrows=" + badrows );
     }
-
-
-
 }
