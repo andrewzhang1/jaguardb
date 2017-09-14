@@ -10,9 +10,21 @@ import java.sql.Statement;
 import java.util.Properties;
 
 public class Importer {
+    private static final String TARGET_PASSWORD = "target_password";
+    private static final String TARGET_USER = "target_user";
+    private static final String TARGET_DB = "target_db";
+    private static final String TARGET_JDBC_URL = "target_jdbc_url";
+    private static final String SOURCE_TABLE = "source_table";
+    private static final String SOURCE_PASSWORD = "source_password";
+    private static final String SOURCE_USER = "source_user";
+    private static final String SOURCE_DB = "source_db";
+    private static final String SOURCE_JDBC_URL = "source_jdbc_url";
+    private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
+    private static final String APP_CONF = "app.conf";
+
     public static void main(String[] args) throws Exception {
 
-    	String appConf = System.getProperty("app.conf");
+    	String appConf = System.getProperty(APP_CONF);
     	if (appConf == null) {
     		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Importer.class.getName());
     		return;
@@ -23,18 +35,18 @@ public class Importer {
     	
     	// load Jaguar driver
     	try {
-    		Class.forName("com.jaguar.jdbc.JaguarDriver");
+    		Class.forName(COM_JAGUAR_JDBC_JAGUAR_DRIVER);
     	}
     	catch (Exception e) {
     		e.printStackTrace();
     	}
  
         // source database
-        String url = appProp.getProperty("source_jdbc_url") + appProp.getProperty("source_db");
+        String url = appProp.getProperty(SOURCE_JDBC_URL) + appProp.getProperty(SOURCE_DB);
         System.out.println("source " + url);
-        String user = appProp.getProperty("source_user");
-        String password = appProp.getProperty("source_password");
-        String table = appProp.getProperty("source_table");
+        String user = appProp.getProperty(SOURCE_USER);
+        String password = appProp.getProperty(SOURCE_PASSWORD);
+        String table = appProp.getProperty(SOURCE_TABLE);
         Connection sconn = DriverManager.getConnection(url, user, password);
         Statement st = sconn.createStatement();
         ResultSet rs = st.executeQuery("select * from " + table);
@@ -45,10 +57,10 @@ public class Importer {
         }
         
         // target database
-        url = appProp.getProperty("target_jdbc_url") + appProp.getProperty("target_db");
+        url = appProp.getProperty(TARGET_JDBC_URL) + appProp.getProperty(TARGET_DB);
         System.out.println("target" + url);
-        user = appProp.getProperty("target_user");
-        password = appProp.getProperty("target_password");
+        user = appProp.getProperty(TARGET_USER);
+        password = appProp.getProperty(TARGET_PASSWORD);
         //String table = appProp.getProperty("source_table");
         Connection tconn = DriverManager.getConnection(url, user, password);
         
