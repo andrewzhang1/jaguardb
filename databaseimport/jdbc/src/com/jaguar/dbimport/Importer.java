@@ -73,7 +73,7 @@ public class Importer {
                 isFirst = false;
             }
             else {
-                sb.append("," + meta.getTableName(i).toLowerCase());
+                sb.append("," + meta.getColumnName(i).toLowerCase());
             }
         }
 
