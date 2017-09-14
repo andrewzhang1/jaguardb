@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Properties;
 
 public class Sync {
+    private static final String D = "D";
+    private static final String U = "U";
+    private static final String I = "I";
     private static final boolean DEBUG = System.getProperty("debug") != null;
     
     public static void main(String[] args) throws Exception {
@@ -92,18 +95,22 @@ public class Sync {
                 String action = rs.getString("action_");
                 Object id = rs.getObject("id_");
                 System.out.println("id=" + id + "action=" + action);
-                if ("I".equals(action)) {
+                if (I.equals(action)) {
                     targetdb.doDelete(rs);
-                    targetdb.doInsert(rs);
-                } else if ("U".equals(action)) {
-                    ResultSet rs2 = targetdb.doQuery(rs);  // ???
-                    if (rs2.next()) {
-                        targetdb.doUpdate(rs);
-                    } else {
+                    try {
                         targetdb.doInsert(rs);
                     }
-                    rs2.close();
-                } else if ("D".equals(action)) {
+                    catch (Exception e) {
+                        if (DEBUG) {
+                            e.printStackTrace();
+                        }
+                        targetdb.doUpdate(rs);
+                    }
+                } else if (U.equals(action)) {
+                    if (targetdb.doUpdate(rs) == 0) {
+                        targetdb.doInsert(rs);
+                    }
+                } else if (D.equals(action)) {
                     targetdb.doDelete(rs);
                 }
                 
