@@ -96,7 +96,6 @@ public class Sync {
                 Object id = rs.getObject("id_");
                 System.out.println("id=" + id + "action=" + action);
                 if (I.equals(action)) {
-                    targetdb.doDelete(rs);
                     try {
                         targetdb.doInsert(rs);
                     }
