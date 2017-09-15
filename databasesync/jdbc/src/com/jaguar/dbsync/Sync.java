@@ -33,7 +33,8 @@ public class Sync {
     private static final String D = "D";
     private static final String U = "U";
     private static final String I = "I";
-    private static final boolean DEBUG = System.getProperty("debug") != null;
+    // private static final boolean DEBUG = System.getProperty("debug") != null;
+    private static final boolean DEBUG = true;
     
     public static void main(String[] args) throws Exception 
 	{
@@ -85,7 +86,7 @@ public class Sync {
             for(int i = 1; i <= srcmeta.getColumnCount(); i++) {
                 columnNames[i - 1] = srcmeta.getColumnName(i).toLowerCase();
             }
-            srcst.close();
+            // srcst.close();
             metars.close();
             
             // target database
@@ -104,11 +105,16 @@ public class Sync {
             String changeLog = appProp.getProperty(CHANGE_LOG);
             PreparedStatement updateLogPS = srcconn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
-            srcst = srcconn.createStatement();
+            // srcst = srcconn.createStatement();
             srcsql = "select * from " + changeLog + " where status_ = 'I' ";
+           	if (DEBUG) { System.out.println("srcsql  " + srcsql ); }
             ResultSet changers = srcst.executeQuery( srcsql);
 			String action, status, ts;
+			long changenum = 0;
             while ( changers.next()) {
+				++ changenum;
+           		if (DEBUG) { System.out.println("inside changers.next() " + changers.toString() ); }
+
 				// rs is changelog result
                 action = changers.getString("action_");
                 status = changers.getString("status_");
@@ -159,7 +165,7 @@ public class Sync {
             srcconn.close();
             targetdb.close();
             if (DEBUG) {
-                System.out.println("sleep ...");
+                System.out.println("chnagenum=" + changenum + " sleep ...");
             }
             Thread.sleep(Long.parseLong(appProp.getProperty(SLEEP_IN_MILIS)));
         }

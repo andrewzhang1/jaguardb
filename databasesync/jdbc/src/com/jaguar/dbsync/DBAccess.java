@@ -19,7 +19,8 @@ public class DBAccess {
     private PreparedStatement deletePS;
     private String[] columnNames;
     
-    private static final boolean DEBUG = System.getProperty("debug") != null;
+    // private static final boolean DEBUG = System.getProperty("debug") != null;
+    private static final boolean DEBUG = true;
     
     public DBAccess(String jdbcUrl, String user, String password, String table, String[] keys, String[] columnNames) {
         this.jdbcUrl = jdbcUrl;
