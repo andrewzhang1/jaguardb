@@ -1,0 +1,19 @@
+source_jdbc_url=jdbc:oracle:thin:@//localhost:1522/
+source_db=test
+source_table=table234
+source_user=test
+source_password=test
+keys=partno,name
+change_log=table234_trigger_table
+sleep_in_milis=1000
+
+target_jdbc_url=jdbc:jaguar://localhost:9999/
+target_db=test
+target_user=test
+target_password=test
+
+### set true to stop java server anytime when java is running
+#stop=true
+
+## print more debug info
+debug=1

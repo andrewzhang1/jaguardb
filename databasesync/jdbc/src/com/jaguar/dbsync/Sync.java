@@ -1,6 +1,7 @@
 package com.jaguar.dbsync;
 
 import java.io.FileReader;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,7 +34,8 @@ public class Sync {
     private static final String I = "I";
     private static final boolean DEBUG = System.getProperty("debug") != null;
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception 
+	{
         
         String appConf = System.getProperty(APP_CONF);
         if (appConf == null) {
@@ -148,6 +150,8 @@ public class Sync {
         }
             
         System.out.println("Total rows updated: " + total);
+		File file = new File("java.lock");
+		file.delete();
 
     }
 

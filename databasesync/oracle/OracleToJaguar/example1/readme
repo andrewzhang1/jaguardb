@@ -1,0 +1,22 @@
+Example of synchronizing Oracle to Jaguar table
+
+1. Suppose you have a table234 in Oracle:
+
+   sqlplus > @create_oracle_table234.sql
+
+2. Create the corresponding table in Jaguar
+   
+   $ jag -u test -p test -h :8888 -f create_jaguar_table234.sql
+
+3. create Oracle trigger and changelog table
+
+   sqlplus > @create_oracle_trigger_table234.sql
+
+
+4. Configure app.conf.oracle and make sure DB/table
+   information is correct
+
+5. Start java server to monitor and synching data Oracle-->Jaguar:
+
+    $ ./sync_oracle_to_jaguar.sh
+
