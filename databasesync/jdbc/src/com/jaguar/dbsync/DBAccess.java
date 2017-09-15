@@ -144,7 +144,7 @@ public class DBAccess {
         queryPS.clearParameters();
         int i = 1;
         for(String key : keys) {
-            queryPS.setObject(i, rs.getObject(key));
+            queryPS.setString(i, rs.getObject(key).toString() );
             i++;
         }
         
@@ -154,7 +154,7 @@ public class DBAccess {
     public int doInsert(ResultSet rs) throws SQLException {
         insertPS.clearParameters();
         for(int i = 0; i < columnNames.length; i++) {
-            insertPS.setObject(i+1, rs.getObject(columnNames[i]));
+            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
         }
         
         return insertPS.executeUpdate();
@@ -165,12 +165,12 @@ public class DBAccess {
         int j = 1;
         for(int i = 0; i < columnNames.length; i++) {
             if (!isKey(columnNames[i])) {
-                updatePS.setObject(j, rs.getObject(columnNames[i]));
+                updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
                 j++;
             }
         }
         for(String key : keys) {
-            updatePS.setObject(j, rs.getObject(key));
+            updatePS.setString(j, rs.getObject(key).toString() );
             j++;
         }
         return updatePS.executeUpdate();
@@ -180,7 +180,7 @@ public class DBAccess {
         deletePS.clearParameters();
         int j = 1;
         for(String key : keys) {
-            deletePS.setObject(j, rs.getObject(key));
+            deletePS.setString(j, rs.getObject(key).toString() );
             j++;
         }
         return deletePS.executeUpdate();
