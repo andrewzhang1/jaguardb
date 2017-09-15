@@ -144,7 +144,7 @@ public class DBAccess {
         queryPS.clearParameters();
         int i = 1;
         for(String key : keys) {
-            queryPS.setString(i, rs.getObject(key).toString() );
+            queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\'") );
             i++;
         }
         
@@ -154,7 +154,7 @@ public class DBAccess {
     public int doInsert(ResultSet rs) throws SQLException {
         insertPS.clearParameters();
         for(int i = 0; i < columnNames.length; i++) {
-            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
+            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
         }
         
         return insertPS.executeUpdate();
@@ -165,12 +165,12 @@ public class DBAccess {
         int j = 1;
         for(int i = 0; i < columnNames.length; i++) {
             if (!isKey(columnNames[i])) {
-                updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
+                updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
                 j++;
             }
         }
         for(String key : keys) {
-            updatePS.setString(j, rs.getObject(key).toString() );
+            updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
             j++;
         }
         return updatePS.executeUpdate();
@@ -180,7 +180,7 @@ public class DBAccess {
         deletePS.clearParameters();
         int j = 1;
         for(String key : keys) {
-            deletePS.setString(j, rs.getObject(key).toString() );
+            deletePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
             j++;
         }
         return deletePS.executeUpdate();
