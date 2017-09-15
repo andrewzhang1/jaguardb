@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Date;
 
 public class Sync {
     private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
@@ -111,7 +112,10 @@ public class Sync {
 				// rs is changelog result
                 String action = rs.getString("action_");
                 Object id = rs.getObject("id_");
-                System.out.println("id=" + id + "action=" + action);
+
+				Date now = new Date();
+                System.out.println(now.toString() + " id=" + id + "action=" + action);
+
                 if (I.equals(action)) {
                     try {
                         targetdb.doInsert(rs);
@@ -149,7 +153,8 @@ public class Sync {
             Thread.sleep(Long.parseLong(appProp.getProperty(SLEEP_IN_MILIS)));
         }
             
-        System.out.println("Total rows updated: " + total);
+		Date now = new Date();
+        System.out.println( now.toString() + " Total rows updated: " + total);
 		File file = new File("java.lock");
 		file.delete();
 
