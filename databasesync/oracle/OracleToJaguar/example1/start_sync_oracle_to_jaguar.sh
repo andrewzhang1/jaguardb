@@ -22,6 +22,7 @@ if [[ -f "java.lock" ]]; then
 fi
 
 touch java.lock
+sed -i "s/.*stop=.*/#stop=true/g" app.conf.oracle
 
 java -cp $LIB/ojdbc6.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/dbsync.jar \
     -Dapp.conf=app.conf.oracle com.jaguar.dbsync.Sync >> sync_oracle_to_jaguar.log &
