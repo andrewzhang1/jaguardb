@@ -37,7 +37,6 @@ public class Sync {
     
     public static void main(String[] args) throws Exception 
 	{
-        
         String appConf = System.getProperty(APP_CONF);
         if (appConf == null) {
             System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Sync.class.getName());
@@ -65,11 +64,11 @@ public class Sync {
             }
      
             // source database
-            String url = appProp.getProperty(SOURCE_JDBC_URL);
-            url = url + appProp.getProperty(SOURCE_DB);
+            String srcurl = appProp.getProperty(SOURCE_JDBC_URL);
+            srcurl = srcurl + appProp.getProperty(SOURCE_DB);
 
             if (DEBUG) {
-                System.out.println("source " + url);
+                System.out.println("sourceurl " + srcurl);
             }
             
             String user = appProp.getProperty(SOURCE_USER);
@@ -77,75 +76,87 @@ public class Sync {
             String table = appProp.getProperty(SOURCE_TABLE); 
             String[] keys = appProp.getProperty(KEYS).split(",");
             
-            Connection conn = DriverManager.getConnection(url, user, password);
-            Statement st = conn.createStatement();
-            String sql = "select * from " + table;
-            ResultSet metars = st.executeQuery(sql);
-            ResultSetMetaData meta = metars.getMetaData();
-            String[] columnNames = new String[meta.getColumnCount()];
-            for(int i = 1; i <= meta.getColumnCount(); i++) {
-                columnNames[i - 1] = meta.getColumnName(i).toLowerCase();
+            Connection srcconn = DriverManager.getConnection( srcurl, user, password);
+            Statement srcst = srcconn.createStatement();
+            String srcsql = "select * from " + table;
+            ResultSet metars = srcst.executeQuery( srcsql);
+            ResultSetMetaData srcmeta = metars.getMetaData();
+            String[] columnNames = new String[ srcmeta.getColumnCount()];
+            for(int i = 1; i <= srcmeta.getColumnCount(); i++) {
+                columnNames[i - 1] = srcmeta.getColumnName(i).toLowerCase();
             }
-            st.close();
+            srcst.close();
             metars.close();
             
             // target database
-            url = appProp.getProperty(TARGET_JDBC_URL);
-            url = url + appProp.getProperty(TARGET_DB);
+            String targeturl = appProp.getProperty(TARGET_JDBC_URL);
+            targeturl = targeturl + appProp.getProperty(TARGET_DB);
 
             if (DEBUG) {
-                System.out.println("target" + url);
+                System.out.println("targeturl " + targeturl);
             }
             user = appProp.getProperty(TARGET_USER);
             password = appProp.getProperty(TARGET_PASSWORD);
             
-            DBAccess targetdb = new DBAccess(url, user, password, table, keys, columnNames);
+            DBAccess targetdb = new DBAccess( targeturl, user, password, table, keys, columnNames);
             targetdb.init();
             
             String changeLog = appProp.getProperty(CHANGE_LOG);
-            PreparedStatement updateLogPS = conn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
+            PreparedStatement updateLogPS = srcconn.prepareStatement("update " + changeLog + " set status_ = 'D' where id_ = ?");
              
-            st = conn.createStatement();
-            sql = "select * from " + changeLog + " where status_ = 'I' ";
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
+            srcst = srcconn.createStatement();
+            srcsql = "select * from " + changeLog + " where status_ = 'I' ";
+            ResultSet changers = srcst.executeQuery( srcsql);
+			String action, status, ts;
+            while ( changers.next()) {
 				// rs is changelog result
-                String action = rs.getString("action_");
-                Object id = rs.getObject("id_");
+                action = changers.getString("action_");
+                status = changers.getString("status_");
+                ts = changers.getString("ts_");
+                Object id = changers.getObject("id_");
 
 				Date now = new Date();
-                System.out.println(now.toString() + " id=" + id + "action=" + action);
+                System.out.println(now.toString() + " id=" + id + " action=" + action + " status=" + status + " ts=" + ts );
 
                 if (I.equals(action)) {
+            		if (DEBUG) { System.out.println("Insert " ); }
                     try {
-                        targetdb.doInsert(rs);
+            			if (DEBUG) { System.out.println("targetdb.doInsert " ); }
+                        targetdb.doInsert( changers);
                     } catch (Exception e) {
                         if (DEBUG) {
                             e.printStackTrace();
                         }
-                        targetdb.doUpdate(rs);
+            			if (DEBUG) { System.out.println("targetdb.doUpdate " ); }
+                        targetdb.doUpdate( changers);
                     }
                 } else if (U.equals(action)) {
-                    if (targetdb.doUpdate(rs) == 0) {
-                        targetdb.doInsert(rs);
+            		if (DEBUG) { System.out.println("Update " ); }
+                    if (targetdb.doUpdate( changers) == 0) {
+            			if (DEBUG) { System.out.println("targetdb.doInsert " ); }
+                        targetdb.doInsert( changers);
                     }
                 } else if (D.equals(action)) {
-                    targetdb.doDelete(rs);
-                }
+            		if (DEBUG) { System.out.println("targetdb.doDelete " ); }
+                    targetdb.doDelete( changers);
+                } else {
+            		if (DEBUG) { System.out.println("Unknown action " + action ); }
+				}
                 
                 //update log status
                 updateLogPS.clearParameters();
                 updateLogPS.setObject(1, id);
+
                 updateLogPS.executeUpdate();
+           		if (DEBUG) { System.out.println("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
                 
                 total++;
-     
             }
             
-            st.close();
-            rs.close();
+            srcst.close();
+            changers.close();
             updateLogPS.close();
-            conn.close();
+            srcconn.close();
             targetdb.close();
             if (DEBUG) {
                 System.out.println("sleep ...");

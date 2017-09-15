@@ -40,8 +40,7 @@ public class DBAccess {
             if (isFirst) {
                 sb.append(key + "=?");
                 isFirst = false;
-            }
-            else {
+            } else {
                  sb.append(" AND " + key +  "=?");
             }
         }
@@ -57,8 +56,7 @@ public class DBAccess {
             if (isFirst) {
                 sb.append(columnNames[i]);
                 isFirst = false;
-            }
-            else {
+            } else {
                 sb.append("," + columnNames[i]);
             }
         }
@@ -69,8 +67,7 @@ public class DBAccess {
             if (isFirst) {
                 sb.append("?");
                 isFirst = false;
-            }
-            else {
+            } else {
                  sb.append(",?");
             }
         }
@@ -91,8 +88,7 @@ public class DBAccess {
                 if (isFirst) {
                     sb.append(columnNames[i]).append("=?");
                     isFirst = false;
-                }
-                else {
+                } else {
                     sb.append("," + columnNames[i]).append("=?");
                 }
             }
@@ -104,8 +100,7 @@ public class DBAccess {
             if (isFirst) {
                 sb.append(key + "=?");
                 isFirst = false;
-            }
-            else {
+            } else {
                 sb.append(" AND " + key + "=?");
             }
         }
@@ -123,8 +118,7 @@ public class DBAccess {
             if (isFirst) {
                 sb.append(key + "=?");
                 isFirst = false;
-            }
-            else {
+            } else {
                 sb.append(" AND " + key + "=?");
             }
         }
@@ -145,10 +139,12 @@ public class DBAccess {
         int i = 1;
         for(String key : keys) {
             // queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\'") );
-            queryPS.setString(i, rs.getObject(key).toString() );
+            // queryPS.setString(i, rs.getObject(key).toString() );
+            queryPS.setObject(i, rs.getObject(key) );
             i++;
         }
         
+        if (DEBUG) { System.out.println("queryPS " + queryPS.toString() ); }
         return queryPS.executeQuery();
     }
     
@@ -156,9 +152,11 @@ public class DBAccess {
         insertPS.clearParameters();
         for(int i = 0; i < columnNames.length; i++) {
             // insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
-            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
+            // insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
+            insertPS.setObject(i+1, rs.getObject(columnNames[i]) );
         }
         
+        if (DEBUG) { System.out.println("insertPS " + insertPS.toString() ); }
         return insertPS.executeUpdate();
     }
     
@@ -168,15 +166,19 @@ public class DBAccess {
         for(int i = 0; i < columnNames.length; i++) {
             if (!isKey(columnNames[i])) {
                 // updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
-                updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
+                // updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
+                updatePS.setObject(j, rs.getObject(columnNames[i]) );
                 j++;
             }
         }
         for(String key : keys) {
             // updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
-            updatePS.setString(j, rs.getObject(key).toString() );
+            // updatePS.setString(j, rs.getObject(key).toString() );
+            updatePS.setObject(j, rs.getObject(key) );
             j++;
         }
+
+        if (DEBUG) { System.out.println("updatePS " + updatePS.toString() ); }
         return updatePS.executeUpdate();
     }
     
@@ -188,6 +190,7 @@ public class DBAccess {
             deletePS.setString(j, rs.getObject(key).toString() );
             j++;
         }
+        if (DEBUG) { System.out.println("deletePS " + deletePS.toString() ); }
         return deletePS.executeUpdate();
     }
     

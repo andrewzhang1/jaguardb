@@ -5,7 +5,7 @@ source_user=test
 source_password=test
 keys=partno,name
 change_log=table234_trigger_table
-sleep_in_milis=1000
+sleep_in_milis=3000
 
 target_jdbc_url=jdbc:jaguar://localhost:9999/
 target_db=test
