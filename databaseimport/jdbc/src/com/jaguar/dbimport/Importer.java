@@ -51,7 +51,7 @@ public class Importer
         System.out.println("sourceurl " + srcurl);
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
-        String table = appProp.getProperty(SOURCE_TABLE);
+        String table = appProp.getProperty(SOURCE_TABLE).toLowerCase();
         Connection sconn = DriverManager.getConnection(srcurl, user, password);
         Statement srcst = sconn.createStatement();
         ResultSet srcrs = srcst.executeQuery("select * from " + table);
@@ -65,7 +65,7 @@ public class Importer
         }
         
         // dest database
-        String desturl = appProp.getProperty(DEST_JDBC_URL) + appProp.getProperty(DEST_DB);
+        String desturl = appProp.getProperty(DEST_JDBC_URL) + appProp.getProperty(DEST_DB).toLowerCase();
         System.out.println("desturl " + desturl);
         user = appProp.getProperty(DEST_USER);
         password = appProp.getProperty(DEST_PASSWORD);

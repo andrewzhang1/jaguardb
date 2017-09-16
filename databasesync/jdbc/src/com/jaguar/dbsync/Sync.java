@@ -72,8 +72,8 @@ public class Sync {
         
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
-        String table = appProp.getProperty(SOURCE_TABLE); 
-        String[] keys = appProp.getProperty(KEYS).split(",");
+        String table = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
+        String[] keys = appProp.getProperty(KEYS).toLowerCase().split(",");
 		String keystr = String.join(",", keys);
 
 		logit("Source database user is " + user );
@@ -95,7 +95,7 @@ public class Sync {
         
         // dest database
         String desturl = appProp.getProperty(TARGET_JDBC_URL);
-        desturl = desturl + appProp.getProperty(TARGET_DB);
+        desturl = desturl + appProp.getProperty(TARGET_DB).toLowerCase();
         if (DEBUG) {
             logit("desturl " + desturl);
         }
@@ -111,7 +111,7 @@ public class Sync {
         
         long total = 0;
 		String  lastID="0", lastTS="0";
-		String action, status, ts;
+		String action, status, ts, id;
 		long changenum = 0;
         while ( true ) {
             Properties appPropNew = new Properties();
@@ -132,7 +132,7 @@ public class Sync {
                 action = changers.getString("action_");
                 status = changers.getString("status_");
                 ts = changers.getString("ts_");
-                Object id = changers.getObject("id_");
+                id = changers.getString("id_");
 				if ( DEBUG ) {
                 	logit(" id=" + id + " action=" + action + " status=" + status + " ts=" + ts );
 				}
