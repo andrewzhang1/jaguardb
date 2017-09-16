@@ -4,10 +4,10 @@ source_table=pet
 source_user=postgres
 source_password=post680
 
-target_jdbc_url=jdbc:jaguar://localhost:4444/
-target_db=test
-target_user=test
-target_password=test
+dest_jdbc_url=jdbc:jaguar://localhost:4444/
+dest_db=test
+dest_user=test
+dest_password=test
 
 ### max number of rows to be imported, testing only
 # import_rows=1

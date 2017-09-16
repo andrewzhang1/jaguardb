@@ -11,10 +11,10 @@ import java.util.Properties;
 
 public class Importer 
 {
-    private static final String TARGET_PASSWORD = "target_password";
-    private static final String TARGET_USER = "target_user";
-    private static final String TARGET_DB = "target_db";
-    private static final String TARGET_JDBC_URL = "target_jdbc_url";
+    private static final String DEST_PASSWORD = "dest_password";
+    private static final String DEST_USER = "dest_user";
+    private static final String DEST_DB = "dest_db";
+    private static final String DEST_JDBC_URL = "dest_jdbc_url";
     private static final String SOURCE_TABLE = "source_table";
     private static final String SOURCE_PASSWORD = "source_password";
     private static final String SOURCE_USER = "source_user";
@@ -57,29 +57,31 @@ public class Importer
         ResultSet srcrs = srcst.executeQuery("select * from " + table);
         ResultSetMetaData srcmeta = srcrs.getMetaData();
         System.out.println("column count=" + srcmeta.getColumnCount());
+		String colname, coltypename;
         for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
-            System.out.println( srcmeta.getColumnName(i) + " has type=" + srcmeta.getColumnType(i) + " typename=" + srcmeta.getColumnTypeName(i) );
+			colname = srcmeta.getColumnName(i);
+			coltypename = srcmeta.getColumnTypeName(i);
+            System.out.println( colname + " has type=" + srcmeta.getColumnType(i) + " typename=" + coltypename );
         }
         
-        // target database
-        String targeturl = appProp.getProperty(TARGET_JDBC_URL) + appProp.getProperty(TARGET_DB);
-        System.out.println("targeturl " + targeturl);
-        user = appProp.getProperty(TARGET_USER);
-        password = appProp.getProperty(TARGET_PASSWORD);
-        Connection tconn = DriverManager.getConnection( targeturl, user, password);
+        // dest database
+        String desturl = appProp.getProperty(DEST_JDBC_URL) + appProp.getProperty(DEST_DB);
+        System.out.println("desturl " + desturl);
+        user = appProp.getProperty(DEST_USER);
+        password = appProp.getProperty(DEST_PASSWORD);
+        Connection tconn = DriverManager.getConnection( desturl, user, password);
         
         // insert statement
         Statement tst = tconn.createStatement();
         long goodrows = 0, badrows = 0;
+		String val0, val;
         while ( srcrs.next()) {
         	StringBuilder sb = new StringBuilder("insert into " + table + " values (");
             for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
-                Object o = srcrs.getObject(i);
-				if ( 1 == i ) {
-					sb.append( "'"+ o.toString() + "'" );
-				} else {
-					sb.append( ",'"+ o.toString() + "'" );
-				}
+				val0 = srcrs.getObject(i).toString();
+				val = val0.replaceAll("'", "\\\\'");
+				if ( i > 1 ) { sb.append( "," ); }
+				sb.append( "'"+ val + "'" );
             }
 
 			// add extra columns if needed
@@ -105,6 +107,6 @@ public class Importer
         sconn.close();
         tconn.close();
         
-        System.out.println("total goodrows=" + goodrows + " imported. badrows=" + badrows );
+        System.out.println("Total goodrows=" + goodrows + " imported. badrows=" + badrows );
     }
 }

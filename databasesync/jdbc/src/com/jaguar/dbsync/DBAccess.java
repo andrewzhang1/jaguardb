@@ -133,8 +133,7 @@ public class DBAccess {
         queryPS.clearParameters();
         int i = 1;
         for(String key : keys) {
-            queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\'") );
-            // queryPS.setString(i, rs.getObject(key).toString() );
+            queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\\\'") );
             // queryPS.setObject(i, rs.getObject(key) );
             i++;
         }
@@ -146,8 +145,7 @@ public class DBAccess {
     public int doInsert(ResultSet rs) throws SQLException {
         insertPS.clearParameters();
         for(int i = 0; i < columnNames.length; i++) {
-            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
-            // insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
+            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\\\'") );
             // insertPS.setObject(i+1, rs.getObject(columnNames[i]) );
         }
         
@@ -160,15 +158,13 @@ public class DBAccess {
         int j = 1;
         for(int i = 0; i < columnNames.length; i++) {
             if (!isKey(columnNames[i])) {
-                updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
-                // updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
+                updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\\\'") );
                 // updatePS.setObject(j, rs.getObject(columnNames[i]) );
                 j++;
             }
         }
         for(String key : keys) {
-            updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
-            // updatePS.setString(j, rs.getObject(key).toString() );
+            updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\\\'") );
             // updatePS.setObject(j, rs.getObject(key) );
             j++;
         }
@@ -181,7 +177,7 @@ public class DBAccess {
         deletePS.clearParameters();
         int j = 1;
         for(String key : keys) {
-            deletePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
+            deletePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\\\'") );
             // deletePS.setString(j, rs.getObject(key).toString() );
             j++;
         }
