@@ -5,7 +5,8 @@ source_user=test
 source_password=test
 keys=partno,name
 change_log=table234_trigger_table
-sleep_in_millis=8000
+sleep_in_millis=3000
+keep_rows=10000
 
 dest_jdbc_url=jdbc:jaguar://localhost:9999/
 dest_db=test
@@ -16,4 +17,4 @@ dest_password=test
 #stop=true
 
 ## print more debug info
-debug=false
+debug=true

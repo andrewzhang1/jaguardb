@@ -30,10 +30,10 @@ public class Sync {
     private static final String SOURCE_DB = "source_db";
     private static final String SOURCE_JDBC_URL = "source_jdbc_url";
     private static final String STOP = "stop";
+    private static final String KEEP_ROWS = "keep_rows";
     private static final String D = "D";
     private static final String U = "U";
     private static final String I = "I";
-    // private static final boolean DEBUG = System.getProperty("debug") != null;
     private static boolean DEBUG = false;
     
     public static void main(String[] args) throws Exception 
@@ -86,13 +86,12 @@ public class Sync {
         ResultSet metars = srcst.executeQuery( srcsql);
         ResultSetMetaData srcmeta = metars.getMetaData();
         String[] columnNames = new String[ srcmeta.getColumnCount()];
-		String colstr = String.join(" ", columnNames );
         for(int i = 1; i <= srcmeta.getColumnCount(); i++) {
             columnNames[i - 1] = srcmeta.getColumnName(i).toLowerCase();
+			logit("Column [" + columnNames[i-1] + "]" );
         }
         srcst.close();
         metars.close();
-		logit("columnNames: " + colstr );
         
         // dest database
         String desturl = appProp.getProperty(TARGET_JDBC_URL);
@@ -101,6 +100,8 @@ public class Sync {
             logit("desturl " + desturl);
         }
         String changeLog = appProp.getProperty(CHANGE_LOG);
+        String keep_rows = appProp.getProperty(KEEP_ROWS, "10000");
+		long keeprows = Long.parseLong( keep_rows );
         PreparedStatement updateLogPS = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
 
         String destuser = appProp.getProperty(TARGET_USER);
@@ -125,7 +126,6 @@ public class Sync {
             srcsql = "select * from " + changeLog + " where status_='N'";
            	if (DEBUG) { logit("srcsql  " + srcsql ); }
             ResultSet changers = srcst.executeQuery( srcsql);
-           	if (DEBUG) { logit("after srcst.executeQuery  " + srcsql ); }
             while ( changers.next()) {
 				++ changenum;
            		if (DEBUG) { logit("inside changers.next() " + changers.toString() ); }
@@ -177,9 +177,20 @@ public class Sync {
             srcst.close();
             changers.close();
             if (DEBUG) {
-                logit("changenum=" + changenum + " sleep " + sleepms + " millisecs ...");
+                logit("changenum=" + changenum + " lastID=" + lastID + " lastTS=" + lastTS );
+                logit("Sleep " + sleepms + " millisecs ...");
             }
             Thread.sleep(Long.parseLong( sleepms ) );
+
+			// periodically cleanup changelog table
+			long lastid = Long.parseLong( lastID );
+			if ( ( (lastid + 1) % keeprows ) == 0 ) {
+				long pastid = lastid - keeprows;
+        		Statement chst = srcconn.createStatement();
+        		String sql = "delete from " + changeLog + " where id_ < " + pastid;
+        		chst.executeUpdate( sql);
+				chst.close();
+			}
         }
 
         updateLogPS.close();
