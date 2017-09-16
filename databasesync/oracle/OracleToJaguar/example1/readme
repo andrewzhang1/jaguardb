@@ -16,7 +16,11 @@ Example of synchronizing Oracle to Jaguar table
 4. Configure app.conf.oracle and make sure DB/table
    information is correct
 
-5. Start java server to monitor and synching data Oracle-->Jaguar:
+5. Start Jaguar dbsync server to monitor and synching data Oracle-->Jaguar:
 
-    $ ./sync_oracle_to_jaguar.sh
+    $ ./start_sync_oracle_to_jaguar.sh
+
+6. Stop Jaguar dbsync server
+
+    $ ./stop_sync_oracle_to_jaguar.sh
 

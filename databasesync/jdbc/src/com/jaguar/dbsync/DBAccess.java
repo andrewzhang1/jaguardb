@@ -18,17 +18,18 @@ public class DBAccess {
     private PreparedStatement updatePS;
     private PreparedStatement deletePS;
     private String[] columnNames;
+    private boolean DEBUG = false;
     
-    // private static final boolean DEBUG = System.getProperty("debug") != null;
-    private static final boolean DEBUG = true;
-    
-    public DBAccess(String jdbcUrl, String user, String password, String table, String[] keys, String[] columnNames) {
+    public DBAccess( String jdbcUrl, String user, String password, String table, 
+					 String[] keys, String[] columnNames, boolean debug ) 
+	{
         this.jdbcUrl = jdbcUrl;
         this.user = user;
         this.password = password;
         this.table = table;
         this.keys = keys;
         this.columnNames = columnNames;
+		this.DEBUG = debug;
     }
     
     public void init() throws Exception {
@@ -42,7 +43,7 @@ public class DBAccess {
                 sb.append(key + "=?");
                 isFirst = false;
             } else {
-                 sb.append(" AND " + key +  "=?");
+                sb.append(" AND " + key +  "=?");
             }
         }
         if (DEBUG) {
@@ -52,24 +53,20 @@ public class DBAccess {
         
         // insert statement
         sb = new StringBuilder("insert into " + table + " (");
-        isFirst = true;
         for(int i = 0; i < columnNames.length; i++) {
-            if (isFirst) {
+            if ( 0 == i ) {
                 sb.append(columnNames[i]);
-                isFirst = false;
             } else {
                 sb.append("," + columnNames[i]);
             }
         }
        
         sb.append(") values (");
-        isFirst = true;
         for(int i = 0; i < columnNames.length; i++) {
-            if (isFirst) {
+            if ( 0 == i) {
                 sb.append("?");
-                isFirst = false;
             } else {
-                 sb.append(",?");
+                sb.append(",?");
             }
         }
         
@@ -78,7 +75,6 @@ public class DBAccess {
         if (DEBUG) {
             System.out.println("insert st: " + sb.toString());
         }
-        
         insertPS = conn.prepareStatement(sb.toString());
         
         // update statement
@@ -112,7 +108,6 @@ public class DBAccess {
         updatePS = conn.prepareStatement(sb.toString());
         
         // delete statement
-        
         sb = new StringBuilder("delete from " + table + " where ");
         isFirst = true;
         for(String key : keys) {
@@ -128,7 +123,6 @@ public class DBAccess {
             System.out.println("delete st: " + sb.toString());
         }
         deletePS = conn.prepareStatement(sb.toString());
-        
     }
     
     public Connection getConnection() {
@@ -139,9 +133,9 @@ public class DBAccess {
         queryPS.clearParameters();
         int i = 1;
         for(String key : keys) {
-            // queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\'") );
+            queryPS.setString(i, rs.getObject(key).toString().replaceAll("'", "\\'") );
             // queryPS.setString(i, rs.getObject(key).toString() );
-            queryPS.setObject(i, rs.getObject(key) );
+            // queryPS.setObject(i, rs.getObject(key) );
             i++;
         }
         
@@ -152,9 +146,9 @@ public class DBAccess {
     public int doInsert(ResultSet rs) throws SQLException {
         insertPS.clearParameters();
         for(int i = 0; i < columnNames.length; i++) {
-            // insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
+            insertPS.setString(i+1, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
             // insertPS.setString(i+1, rs.getObject(columnNames[i]).toString() );
-            insertPS.setObject(i+1, rs.getObject(columnNames[i]) );
+            // insertPS.setObject(i+1, rs.getObject(columnNames[i]) );
         }
         
         if (DEBUG) { System.out.println("insertPS " + insertPS.toString() ); }
@@ -166,16 +160,16 @@ public class DBAccess {
         int j = 1;
         for(int i = 0; i < columnNames.length; i++) {
             if (!isKey(columnNames[i])) {
-                // updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
+                updatePS.setString(j, rs.getObject(columnNames[i]).toString().replaceAll("'", "\\'") );
                 // updatePS.setString(j, rs.getObject(columnNames[i]).toString() );
-                updatePS.setObject(j, rs.getObject(columnNames[i]) );
+                // updatePS.setObject(j, rs.getObject(columnNames[i]) );
                 j++;
             }
         }
         for(String key : keys) {
-            // updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
+            updatePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
             // updatePS.setString(j, rs.getObject(key).toString() );
-            updatePS.setObject(j, rs.getObject(key) );
+            // updatePS.setObject(j, rs.getObject(key) );
             j++;
         }
 
@@ -187,8 +181,8 @@ public class DBAccess {
         deletePS.clearParameters();
         int j = 1;
         for(String key : keys) {
-            // deletePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
-            deletePS.setString(j, rs.getObject(key).toString() );
+            deletePS.setString(j, rs.getObject(key).toString().replaceAll("'", "\\'") );
+            // deletePS.setString(j, rs.getObject(key).toString() );
             j++;
         }
         if (DEBUG) { System.out.println("deletePS " + deletePS.toString() ); }
@@ -209,9 +203,6 @@ public class DBAccess {
                 return true;
             }
         }
-        
         return false;
     }
-
-
 }
