@@ -10,7 +10,7 @@ Example of synchronizing Oracle to Jaguar table
 
 3. create Oracle trigger and changelog table
 
-   sqlplus > @create_oracle_trigger_table234.sql
+   ../oracle_create_changelog_trigger.sh table234 table234_changelog
 
 
 4. Configure app.conf.oracle and make sure DB/table
