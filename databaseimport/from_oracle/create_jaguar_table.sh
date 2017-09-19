@@ -109,6 +109,9 @@ function getColType()
 	elif [[ "x$typ" = "xrowid" ]]; then
 			g_type="uuid"
 			g_typestr="uuid"
+	elif [[ "x$typ" = "xint" ]]; then
+			g_type="int"
+			g_typestr="int"
 	else
 		g_type=$otype
 		g_typestr=$otype
@@ -119,13 +122,20 @@ function getColType()
 }
 
 ######################## main ###########################
-table=$1
 
+table=$1
 
 if [[ "x$table" = "x" ]]; then
 	echo "Usage:     $0  <TABLE_NAME>"
 	echo
 	echo "Example:   $0  table123 "
+	exit 1
+fi
+
+if type sqlplus; then
+	echo "sqlplus is found, continue ..."
+else
+	echo "sqlplus is not found, quit"
 	exit 1
 fi
 
@@ -136,7 +146,7 @@ cd $dirn
 
 echo -n "Enter Oracle user name: "
 read uid
-echo -n "Enter Oracle user password: "
+echo -n "Enter $uid password: "
 read -s pass
 echo
 
