@@ -81,18 +81,37 @@ function getColType()
 		g_typestr="char($g_precision)"
 	elif [[ "x$typ" = "xblob" ]]; then
 		g_type="char"
-		((g_precision=6000))
-		echo "BLOB problem, please take care of it"
-		exit 1
+		((g_precision=10000))
+		echo "$g_col BLOB, please take care of it"
 		g_typestr="char($g_precision)"
 	elif [[ "x$typ" = "xclob" ]]; then
 		g_type="char"
-		((g_precision=6000))
-		echo "CLOB problem, please take care of it"
-		exit 1
+		((g_precision=10000))
+		echo "$g_col CLOB, please take care of it"
 		g_typestr="char($g_precision)"
+	elif [[ "x$typ" = "xtimestamp" ]]; then
+		if ((g_precision==9)); then
+			g_type="datetimenano"
+			g_typestr="datetimenano"
+		else
+			g_type="datetime"
+			g_typestr="datetime"
+		fi
+	elif [[ "x$typ" = "xbinary_float" ]]; then
+			g_type="float"
+			g_typestr="float(20,6)"
+	elif [[ "x$typ" = "xbinary_double" ]]; then
+			g_type="float"
+			g_typestr="float(38,12)"
+	elif [[ "x$typ" = "xraw" ]]; then
+			g_type="char"
+			g_typestr="char($g_precision)"
+	elif [[ "x$typ" = "xrowid" ]]; then
+			g_type="uuid"
+			g_typestr="uuid"
 	else
 		g_type=$otype
+		g_typestr=$otype
 	fi
 
 	#echo "s3372 g_typestr=$g_typestr"
