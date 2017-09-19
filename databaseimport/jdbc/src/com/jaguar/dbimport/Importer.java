@@ -56,12 +56,15 @@ public class Importer
         Statement srcst = sconn.createStatement();
         ResultSet srcrs = srcst.executeQuery("select * from " + table);
         ResultSetMetaData srcmeta = srcrs.getMetaData();
+        int ncols = srcmeta.getColumnCount();
+		String colnames[] = new String[ncols];
         System.out.println("column count=" + srcmeta.getColumnCount());
 		String colname, coltypename;
-        for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
+        for (int i = 1; i <= ncols; i++) {
 			colname = srcmeta.getColumnName(i);
 			coltypename = srcmeta.getColumnTypeName(i);
             System.out.println( colname + " has type=" + srcmeta.getColumnType(i) + " typename=" + coltypename );
+			colnames[i-1] = colname.toLowerCase();
         }
         
         // dest database
@@ -76,9 +79,18 @@ public class Importer
         long goodrows = 0, badrows = 0;
 		String val0, val;
         while ( srcrs.next()) {
-        	StringBuilder sb = new StringBuilder("insert into " + table + " values (");
-            for (int i = 1; i <= srcmeta.getColumnCount(); i++) {
-				val0 = srcrs.getObject(i).toString();
+        	StringBuilder sb = new StringBuilder("insert into " + table + " (");
+            for (int i = 0; i < ncols; i++) {
+				if ( 0 == i ) {
+					sb.append( colnames[0] );
+				} else {
+					sb.append( ", " + colnames[i] );
+				}
+			}
+			sb.append( ") values (" );
+
+            for (int i = 1; i <= ncols; i++) {
+				val0 = srcrs.getString(i);
 				val = val0.replaceAll("'", "\\\\'");
 				if ( i > 1 ) { sb.append( "," ); }
 				sb.append( "'"+ val + "'" );
