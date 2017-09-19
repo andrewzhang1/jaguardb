@@ -186,7 +186,7 @@ numlines=`wc -l $descrc|cut -d' ' -f1`
 #echo "drop table if exists $lowtable;" >> $cmd
 echo "create table $lowtable (" >> $cmd
 ### key cols first
-((n=1))
+((nkeys=0))
 while read line
 do
 	col=`echo $line|awk '{print $1}'`
@@ -199,11 +199,11 @@ do
     #echo "s1282 getColType $line"
     getColType "$line"
 
-	if ((n==1)); then
+	if ((nkeys==0)); then
 		echo "  key:" >> $cmd
 	fi
 	echo "    $col $g_typestr," >> $cmd
-	((n=n+1))
+	((nkeys=nkeys+1))
 done < $descrc
 
 
@@ -220,7 +220,10 @@ do
     getColType "$line"
 
 	if ((n==1)); then
-		echo "  value: $col $g_typestr, " >> $cmd
+		if (( nkeys > 0 )); then
+			echo "  value: " >> $cmd
+		fi
+		echo "    $col $g_typestr," >> $cmd
 	elif ((n<numlines)); then
 		echo "    $col $g_typestr," >> $cmd
 	else
