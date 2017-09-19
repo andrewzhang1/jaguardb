@@ -1,0 +1,14 @@
+source_jdbc_url=jdbc:oracle:thin:@//localhost:1522/
+source_db=test
+source_table=table234
+source_user=test
+source_password=test
+
+dest_jdbc_url=jdbc:jaguar://localhost:9999/
+dest_db=test
+dest_user=test
+dest_password=test
+
+### max number of rows to be imported, testing only
+#import_rows=10
+

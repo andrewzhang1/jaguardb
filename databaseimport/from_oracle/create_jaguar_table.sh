@@ -102,10 +102,6 @@ function getColType()
 ######################## main ###########################
 table=$1
 
-pd=`pwd`
-dirn="tmpdir$$"
-/bin/mkdir -p $dirn
-cd $dirn
 
 if [[ "x$table" = "x" ]]; then
 	echo "Usage:     $0  <TABLE_NAME>"
@@ -114,6 +110,10 @@ if [[ "x$table" = "x" ]]; then
 	exit 1
 fi
 
+pd=`pwd`
+dirn="tmpdir$$"
+/bin/mkdir -p $dirn
+cd $dirn
 
 echo -n "Enter Oracle user name: "
 read uid
