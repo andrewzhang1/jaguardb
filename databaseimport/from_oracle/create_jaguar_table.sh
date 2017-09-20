@@ -2,7 +2,7 @@
 
 ##########################################################################################
 ##
-## Usage:   ./create_jaguar_table.sh  <ORACLE_TABLE>
+## Usage:   ./create_jaguar_table.sh  <ORACLE_TABLE>  [host:port/service]
 ##
 ##########################################################################################
 
@@ -124,11 +124,14 @@ function getColType()
 ######################## main ###########################
 
 table=$1
+remotecfg=$2
 
 if [[ "x$table" = "x" ]]; then
-	echo "Usage:     $0  <TABLE_NAME>"
+	echo "Usage:     $0  <TABLE_NAME> [host:port/service]"
 	echo
 	echo "Example:   $0  table123 "
+	echo "Example:   $0  table123  192.168.7.120:1522/test "
+	echo "where 192.168.7.120 is Oracle server's IP, 1522 is port, test is service name"
 	exit 1
 fi
 
@@ -137,6 +140,10 @@ if type sqlplus; then
 else
 	echo "sqlplus is not found, quit"
 	exit 1
+fi
+
+if [[ "x$remotecfg" != "x" ]]; then
+	remotecfg="@$remotecfg"
 fi
 
 pd=`pwd`
@@ -156,7 +163,7 @@ echo "spool $log;" > $cmd
 echo "describe $table;" >> $cmd
 echo "spool off;" >> $cmd
 
-sqlplus -S $uid/$pass < $cmd  >/dev/null
+sqlplus -S $uid/${pass}$remotecfg < $cmd  >/dev/null
 /bin/rm -f $cmd
 descrc="describe_${table}.txt"
 desccolrc="describe_${table}_colname.txt"
@@ -176,7 +183,7 @@ WHERE cols.table_name = '$TABLE'
 AND cons.constraint_type = 'P'
 AND cons.constraint_name = cols.constraint_name
 AND cons.owner = cols.owner;" > $cmd
-sqlplus -S $uid/$pass < $cmd | grep -v 'COLUMN_NAME' |grep -v '\-\-\-\-\-' > keycols.txt.upper
+sqlplus -S $uid/${pass}$remotecfg < $cmd | grep -v 'COLUMN_NAME' |grep -v '\-\-\-\-\-' > keycols.txt.upper
 cat keycols.txt.upper|tr '[:upper:]' '[:lower:]' > keycols.txt
 
 
@@ -248,9 +255,8 @@ fi
 echo "Creating $table in Jaguar database"
 echo -n "Which database do you want the table $table to be created in ? "
 read db
-echo -n "Enter Jaguar user name: "
-read uid
-echo -n "Enter $uid password: "
+uid=admin
+echo -n "Enter Jaguar admin password: "
 read -s pass
 echo
 port=`cat $JAGUAR_HOME/jaguar/conf/server.conf |grep PORT|grep -v '#'|cut -d= -f2`

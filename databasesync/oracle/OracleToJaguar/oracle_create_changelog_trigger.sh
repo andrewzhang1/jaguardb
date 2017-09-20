@@ -4,12 +4,16 @@
 ## Create changelog table for a table in Oralce. Also creates triggers
 ## to track DML (insert, update, delete in Oracle table
 ##
-## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE>  <ORACLE_CHANGELOG_TABLE>
+## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE>  <ORACLE_CHANGELOG_TABLE> [host:port/service]
+##
+##  where host is oracle host name or IP, port is oracle listener port, service is its service name
+##  Option host:port/service is optional
 ##
 ##########################################################################################
 
 table=$1
 changelog=$2
+remotecfg=$3
 
 pd=`pwd`
 dirn="tmpdir$$"
@@ -21,6 +25,10 @@ if [[ "x$changelog" = "x" ]]; then
 	echo "Example:   $0  table123  table123_changelog"
 	echo "Make sure CHANGELOG_TABLE does not exist"
 	exit 1
+fi
+
+if [[ "x$remotecfg" != "x" ]]; then
+	remotecfg="@$remotecfg"
 fi
 
 cmd="tmpcmd.sql"
@@ -36,7 +44,7 @@ echo -n "Eenter Oracle user password: "
 read -s pass
 echo
 
-sqlplus -S $uid/$pass < $cmd  >/dev/null
+sqlplus -S $uid/$pass$remotecfg < $cmd  >/dev/null
 /bin/rm -f $cmd
 descrc="describe_${table}.txt"
 desccolrc="describe_${table}_colname.txt"
@@ -44,7 +52,7 @@ cat $log|grep -v 'SQL>' |grep -vi 'null?'|grep -v '\-\-\-\-\-\-\-'|sed -e 's/not
 /bin/rm -f $log
 awk '{print $1}' $descrc > $desccolrc
 
-echo "describe $changelog;" | sqlplus -S $uid/$pass > $log 2>&1
+echo "describe $changelog;" | sqlplus -S $uid/$pass$remotecfg > $log 2>&1
 ((changelogExist=0))
 if grep -i error $log; then
 	echo "OK, $changelog does not exist, use $changelog as changelog table"
@@ -92,15 +100,15 @@ cmd2="${cmd}.tmprc"
 tr '[:upper:]' '[:lower:]' < $cmd > $cmd2
 /bin/mv -f $cmd2 $cmd
 
-sqlplus -S $uid/$pass < $cmd
+sqlplus -S $uid/$pass$remotecfg < $cmd
 echo "Created $changelog"
-echo "describe $changelog;" | sqlplus -S $uid/$pass 
+echo "describe $changelog;" | sqlplus -S $uid/$pass$remotecfg 
 
 
 ##################### create oracle sequence
 echo "drop sequence ${changelog}_jidseq;" > $cmd
 echo "create sequence ${changelog}_jidseq start with 1;" >> $cmd 
-sqlplus -S $uid/$pass < $cmd > /dev/null 2>&1
+sqlplus -S $uid/$pass$remotecfg < $cmd > /dev/null 2>&1
 echo "Created sequence ${changelog}_jidseq"
 
 
@@ -126,7 +134,7 @@ done < $desccolrc
 echo  "        );" >> $cmd
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass < $cmd
+sqlplus -S $uid/$pass$remotecfg < $cmd
 echo "Created insert trigger ${table}_jagtrgins"
 
 
@@ -152,7 +160,7 @@ done < $desccolrc
 echo  "        );" >> $cmd
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass < $cmd
+sqlplus -S $uid/$pass$remotecfg < $cmd
 echo "Created update trigger ${table}_jagtrgupd"
 
 
@@ -178,7 +186,7 @@ done < $desccolrc
 echo  "        );" >> $cmd
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass < $cmd
+sqlplus -S $uid/$pass$remotecfg < $cmd
 echo "Created delete trigger ${table}_jagdel"
 
 
