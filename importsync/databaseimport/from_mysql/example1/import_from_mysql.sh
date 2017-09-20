@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LIB=../../jdbc/lib
-JARS=$LIB/mysql-connector-java-5.1.43-bin.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/dbimport.jar 
+LIB=../../../jdbc/lib
+JARS=$LIB/mysql-connector-java-5.1.43-bin.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/jdbcsql.jar
 
-nohup java -cp $JARS -Dapp.conf=app.conf.mysql com.jaguar.dbimport.Importer >> import_mysql.log &
+nohup java -cp $JARS -Dapp.conf=app.conf.mysql com.jaguar.jdbcsql.Importer >> import_mysql.log &
 
