@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JDBC=../../../jdbc
+JDBC=../../../../jdbc
 LIB=$JDBC/lib
 
 pd=`pwd`
@@ -17,13 +17,13 @@ if [[ -f "java.lock" ]]; then
 	echo "Lock file java.lock exists, sync server is running"
 	echo "If the sync server is not running, please remove the java.lock "
 	echo "and try again"
-	/bin/ps aux|grep dbsync.Sync |grep -v grep
+	/bin/ps aux|grep jdbcsql.Sync |grep -v grep
 	exit 1
 fi
 
 touch java.lock
 sed -i "s/.*stop=.*/#stop=true/g" app.conf.oracle
 
-java -cp $LIB/ojdbc6.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/dbsync.jar \
-    -Dapp.conf=app.conf.oracle com.jaguar.dbsync.Sync > sync_oracle_to_jaguar.log &
+java -cp $LIB/ojdbc6.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/jdbcsql.jar \
+    -Dapp.conf=app.conf.oracle com.jaguar.jdbcsql.Sync > sync_oracle_to_jaguar.log &
 

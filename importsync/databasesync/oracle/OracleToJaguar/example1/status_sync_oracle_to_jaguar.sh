@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-/bin/ps aux|grep com.jaguar.dbsync.Sync|grep -v grep
+/bin/ps aux|grep com.jaguar.jdbcsql.Sync|grep -v grep
 
