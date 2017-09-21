@@ -8,27 +8,26 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Properties;
+import com.jaguar.jdbcsql.Command;
 
 public class Importer 
 {
-    private static final String DEST_PASSWORD = "dest_password";
-    private static final String DEST_USER = "dest_user";
-    private static final String DEST_DB = "dest_db";
-    private static final String DEST_JDBC_URL = "dest_jdbc_url";
     private static final String SOURCE_TABLE = "source_table";
     private static final String SOURCE_PASSWORD = "source_password";
     private static final String SOURCE_USER = "source_user";
-    private static final String SOURCE_DB = "source_db";
-    private static final String SOURCE_JDBC_URL = "source_jdbc_url";
+    private static final String SOURCE_JDBCURL = "source_jdbcurl";
+    private static final String DEST_PASSWORD = "dest_password";
+    private static final String DEST_USER = "dest_user";
+    private static final String DEST_JDBCURL = "dest_jdbcurl";
     private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
-    private static final String APP_CONF = "app.conf";
+    private static final String APP_CONF = "appconf";
     private static final String IMPORT_ROWS = "import_rows";
 
     public static void main(String[] args) throws Exception 
 	{
     	String appConf = System.getProperty(APP_CONF);
     	if (appConf == null) {
-    		System.err.println("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Importer.class.getName());
+    		System.err.println("Usage: java -cp jar1:jar2:... -Dappconf=<config_file> " + Importer.class.getName());
     		return;
     	}
     	
@@ -47,14 +46,17 @@ public class Importer
         String import_rows = appProp.getProperty(IMPORT_ROWS);
 		if ( null == import_rows ) import_rows = "0";
 		long importrows = Long.parseLong(import_rows, 10);
-        String srcurl = appProp.getProperty(SOURCE_JDBC_URL) + appProp.getProperty(SOURCE_DB);
+        String srcurl = appProp.getProperty(SOURCE_JDBCURL);  // has /dbname or /servicename at end
+        String arr[] = srcurl.split(":");
+        String source_dbtype = arr[1].toLowerCase();
         System.out.println("sourceurl " + srcurl);
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
         String table = appProp.getProperty(SOURCE_TABLE).toLowerCase();
         Connection sconn = DriverManager.getConnection(srcurl, user, password);
         Statement srcst = sconn.createStatement();
-        ResultSet srcrs = srcst.executeQuery("select * from " + table);
+		String onesql = Command.getSelectOneRowSQL( source_dbtype, table );
+        ResultSet srcrs = srcst.executeQuery( onesql );
         ResultSetMetaData srcmeta = srcrs.getMetaData();
         int ncols = srcmeta.getColumnCount();
 		String colnames[] = new String[ncols];
@@ -68,7 +70,7 @@ public class Importer
         }
         
         // dest database
-        String desturl = appProp.getProperty(DEST_JDBC_URL) + appProp.getProperty(DEST_DB).toLowerCase();
+        String desturl = appProp.getProperty(DEST_JDBCURL).toLowerCase();
         System.out.println("desturl " + desturl);
         user = appProp.getProperty(DEST_USER);
         password = appProp.getProperty(DEST_PASSWORD);

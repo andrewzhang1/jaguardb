@@ -1,11 +1,9 @@
-source_jdbc_url=jdbc:oracle:thin:@//localhost:1522/
-source_db=test
+source_jdbcurl=jdbc:oracle:thin:@//localhost:1522/test
 source_table=table234
 source_user=test
 source_password=test
 
-dest_jdbc_url=jdbc:jaguar://localhost:9999/
-dest_db=test
+dest_jdbcurl=jdbc:jaguar://localhost:9999/test
 dest_user=test
 dest_password=test
 

@@ -16,20 +16,18 @@ import java.util.Date;
 
 public class Sync 
 {
-    private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
-    private static final String APP_CONF = "app.conf";
-    private static final String SLEEP_IN_MILLIS = "sleep_in_millis";
-    private static final String CHANGE_LOG = "change_log";
-    private static final String TARGET_PASSWORD = "dest_password";
-    private static final String TARGET_USER = "dest_user";
-    private static final String TARGET_DB = "dest_db";
-    private static final String TARGET_JDBC_URL = "dest_jdbc_url";
-    private static final String KEYS = "keys";
+    private static final String SOURCE_JDBCURL = "source_jdbcurl";
     private static final String SOURCE_TABLE = "source_table";
     private static final String SOURCE_PASSWORD = "source_password";
     private static final String SOURCE_USER = "source_user";
-    private static final String SOURCE_DB = "source_db";
-    private static final String SOURCE_JDBC_URL = "source_jdbc_url";
+    private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
+    private static final String DEST_JDBCURL = "dest_jdbcurl";
+    private static final String APP_CONF = "appconf";
+    private static final String CHANGE_LOG = "change_log";
+    private static final String DEST_PASSWORD = "dest_password";
+    private static final String DEST_USER = "dest_user";
+    private static final String SLEEP_IN_MILLIS = "sleep_in_millis";
+    private static final String KEYS = "keys";
     private static final String STOP = "stop";
     private static final String KEEP_ROWS = "keep_rows";
     private static final String D = "D";
@@ -41,7 +39,7 @@ public class Sync
 	{
         String appConf = System.getProperty(APP_CONF);
         if (appConf == null) {
-            logit("Usage: java -cp jar1:jar2:... -Dapp.conf=<config_file> " + Sync.class.getName());
+            logit("Usage: java -cp jar1:jar2:... -Dappconf=<config_file> " + Sync.class.getName());
             return;
         }
 
@@ -62,11 +60,12 @@ public class Sync
         DEBUG = Boolean.parseBoolean(appProp.getProperty("debug"));
 
        // source database
-        String srcurl = appProp.getProperty(SOURCE_JDBC_URL);
-        srcurl = srcurl + appProp.getProperty(SOURCE_DB);
+        String srcurl = appProp.getProperty(SOURCE_JDBCURL);
         if (DEBUG) {
             logit("sourceurl " + srcurl);
         }
+        String arr[] = srcurl.split(":");
+        String source_dbtype = arr[1].toLowerCase();
 
         String sleepms = appProp.getProperty(SLEEP_IN_MILLIS, "1000" );
 		logit("Sleep interval is " + sleepms + " milliseconds" );
@@ -83,7 +82,7 @@ public class Sync
         
         Connection srcconn = DriverManager.getConnection( srcurl, user, password);
         Statement srcst = srcconn.createStatement();
-        String srcsql = "select * from " + table;
+        String srcsql = Command.getSelectOneRowSQL( source_dbtype, table );
         ResultSet metars = srcst.executeQuery( srcsql);
         ResultSetMetaData srcmeta = metars.getMetaData();
         String[] columnNames = new String[ srcmeta.getColumnCount()];
@@ -95,8 +94,7 @@ public class Sync
         metars.close();
         
         // dest database
-        String desturl = appProp.getProperty(TARGET_JDBC_URL);
-        desturl = desturl + appProp.getProperty(TARGET_DB).toLowerCase();
+        String desturl = appProp.getProperty(DEST_JDBCURL).toLowerCase();
         if (DEBUG) {
             logit("desturl " + desturl);
         }
@@ -105,8 +103,8 @@ public class Sync
 		long keeprows = Long.parseLong( keep_rows );
         PreparedStatement updateLogPS = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
 
-        String destuser = appProp.getProperty(TARGET_USER);
-        String destpassword = appProp.getProperty(TARGET_PASSWORD);
+        String destuser = appProp.getProperty(DEST_USER);
+        String destpassword = appProp.getProperty(DEST_PASSWORD);
         DBAccess destdb = new DBAccess( desturl, destuser, destpassword, table, keys, columnNames, DEBUG );
         destdb.init();
         

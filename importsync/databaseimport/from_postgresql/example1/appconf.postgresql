@@ -1,11 +1,10 @@
-source_jdbc_url=jdbc:postgresql://localhost:5432/
-source_db=test
+source_jdbcurl=jdbc:postgresql://localhost:5432/test
+source_dbtype=postgresql
 source_table=table234
 source_user=postgres
 source_password=post680
 
-dest_jdbc_url=jdbc:jaguar://localhost:8888/
-dest_db=test
+dest_jdbcurl=jdbc:jaguar://localhost:8888/test
 dest_user=test
 dest_password=test
 
