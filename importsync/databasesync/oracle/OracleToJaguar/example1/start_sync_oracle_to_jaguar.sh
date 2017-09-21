@@ -1,5 +1,7 @@
 #!/bin/bash
 
+unset _JAVA_OPTIONS
+
 JDBC=../../../../jdbc
 LIB=$JDBC/lib
 
