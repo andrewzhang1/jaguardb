@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Properties;
 import com.jaguar.jdbcsql.Command;
+import com.jaguar.jdbcsql.JagUtil;
 
 public class Importer 
 {
@@ -52,75 +53,85 @@ public class Importer
         System.out.println("sourceurl " + srcurl);
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
-        String table = appProp.getProperty(SOURCE_TABLE).toLowerCase();
+        // String table = appProp.getProperty(SOURCE_TABLE).toLowerCase();
+        String tables = appProp.getProperty(SOURCE_TABLE).toLowerCase();
         Connection sconn = DriverManager.getConnection(srcurl, user, password);
         Statement srcst = sconn.createStatement();
-		String onesql = Command.getSelectOneRowSQL( source_dbtype, table );
-        ResultSet srcrs = srcst.executeQuery( onesql );
-        ResultSetMetaData srcmeta = srcrs.getMetaData();
-        int ncols = srcmeta.getColumnCount();
-		String colnames[] = new String[ncols];
-        System.out.println("column count=" + srcmeta.getColumnCount());
-		String colname, coltypename;
-        for (int i = 1; i <= ncols; i++) {
-			colname = srcmeta.getColumnName(i);
-			coltypename = srcmeta.getColumnTypeName(i);
-            System.out.println( colname + " has type=" + srcmeta.getColumnType(i) + " typename=" + coltypename );
-			colnames[i-1] = colname.toLowerCase();
-        }
-        
+		String tabs[] = JagUtil.splitString( tables, "|" );
+		int tablen = tabs.length;
+
         // dest database
         String desturl = appProp.getProperty(DEST_JDBCURL).toLowerCase();
         System.out.println("desturl " + desturl);
         user = appProp.getProperty(DEST_USER);
         password = appProp.getProperty(DEST_PASSWORD);
         Connection tconn = DriverManager.getConnection( desturl, user, password);
-        
-        // insert statement
         Statement tst = tconn.createStatement();
-        long goodrows = 0, badrows = 0;
-		String val0, val;
-        while ( srcrs.next()) {
-        	StringBuilder sb = new StringBuilder("insert into " + table + " (");
-            for (int i = 0; i < ncols; i++) {
-				if ( 0 == i ) {
-					sb.append( colnames[0] );
-				} else {
-					sb.append( ", " + colnames[i] );
-				}
-			}
-			sb.append( ") values (" );
 
+		for ( int ti = 0; ti < tablen; ++ti ) {
+			String table = tabs[ti];
+    		String onesql = Command.getSelectOneRowSQL( source_dbtype, table );
+            ResultSet srcrs = srcst.executeQuery( onesql );
+            ResultSetMetaData srcmeta = srcrs.getMetaData();
+            int ncols = srcmeta.getColumnCount();
+    		String colnames[] = new String[ncols];
+            System.out.println("column count=" + srcmeta.getColumnCount());
+    		String colname, coltypename;
             for (int i = 1; i <= ncols; i++) {
-				val0 = srcrs.getString(i);
-				val = val0.replaceAll("'", "\\\\'");
-				if ( i > 1 ) { sb.append( "," ); }
-				sb.append( "'"+ val + "'" );
+    			colname = srcmeta.getColumnName(i);
+    			coltypename = srcmeta.getColumnTypeName(i);
+                System.out.println( colname + " has type=" + srcmeta.getColumnType(i) + " typename=" + coltypename );
+    			colnames[i-1] = colname.toLowerCase();
+            }
+            
+            
+            // insert statement
+            long goodrows = 0, badrows = 0;
+    		String val0, val;
+            while ( srcrs.next()) {
+            	StringBuilder sb = new StringBuilder("insert into " + table + " (");
+                for (int i = 0; i < ncols; i++) {
+    				if ( 0 == i ) {
+    					sb.append( colnames[0] );
+    				} else {
+    					sb.append( ", " + colnames[i] );
+    				}
+    			}
+    			sb.append( ") values (" );
+    
+                for (int i = 1; i <= ncols; i++) {
+    				val0 = srcrs.getString(i);
+    				val = val0.replaceAll("'", "\\\\'");
+    				if ( i > 1 ) { sb.append( "," ); }
+    				sb.append( "'"+ val + "'" );
+                }
+    
+    			// add extra columns if needed
+    			// sb.append( ",'extra1', 'extra2'" );
+    
+    			sb.append( ")");
+    
+                if ( tst.executeUpdate( sb.toString() ) > 0 ) {
+            		System.out.println( "OK " + sb.toString() );
+    				++ goodrows;
+    			} else {
+            		System.out.println( "ER " + sb.toString() );
+    				++ badrows;
+    			}
+    
+    			if ( importrows > 0 ) {
+    				if ( ( goodrows+badrows ) >= importrows ) {
+    					break;
+    				}
+    			}
             }
 
-			// add extra columns if needed
-			// sb.append( ",'extra1', 'extra2'" );
+        	System.out.println("Table=" + table + " total goodrows=" + goodrows + " imported. badrows=" + badrows );
 
-			sb.append( ")");
-
-            if ( tst.executeUpdate( sb.toString() ) > 0 ) {
-        		System.out.println( "OK " + sb.toString() );
-				++ goodrows;
-			} else {
-        		System.out.println( "ER " + sb.toString() );
-				++ badrows;
-			}
-
-			if ( importrows > 0 ) {
-				if ( ( goodrows+badrows ) >= importrows ) {
-					break;
-				}
-			}
-        }
+		}
         
         sconn.close();
         tconn.close();
         
-        System.out.println("Total goodrows=" + goodrows + " imported. badrows=" + badrows );
     }
 }

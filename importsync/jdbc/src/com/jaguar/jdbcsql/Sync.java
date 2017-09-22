@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Date;
+import com.jaguar.jdbcsql.JagUtil;
+
 
 public class Sync 
 {
@@ -23,7 +25,6 @@ public class Sync
     private static final String COM_JAGUAR_JDBC_JAGUAR_DRIVER = "com.jaguar.jdbc.JaguarDriver";
     private static final String DEST_JDBCURL = "dest_jdbcurl";
     private static final String APP_CONF = "appconf";
-    private static final String CHANGE_LOG = "change_log";
     private static final String DEST_PASSWORD = "dest_password";
     private static final String DEST_USER = "dest_user";
     private static final String SLEEP_IN_MILLIS = "sleep_in_millis";
@@ -43,7 +44,6 @@ public class Sync
             return;
         }
 
-		logit("Jaguar SyncServer started ...");
         
         // load Jaguar driver
         try {
@@ -58,146 +58,164 @@ public class Sync
         Properties appProp = new Properties();
         appProp.load(new FileReader(appConf));
         DEBUG = Boolean.parseBoolean(appProp.getProperty("debug"));
-
-       // source database
         String srcurl = appProp.getProperty(SOURCE_JDBCURL);
-        if (DEBUG) {
-            logit("sourceurl " + srcurl);
-        }
+        logit("sourceurl " + srcurl);
         String arr[] = srcurl.split(":");
         String source_dbtype = arr[1].toLowerCase();
-
         String sleepms = appProp.getProperty(SLEEP_IN_MILLIS, "1000" );
 		logit("Sleep interval is " + sleepms + " milliseconds" );
-        
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
-        String table = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
-        String[] keys = appProp.getProperty(KEYS).toLowerCase().split(",");
-		String keystr = String.join(",", keys);
-
 		logit("Source database user is " + user );
-		logit("Source and dest table is " + table );
-		logit("Table keys: " + keystr );
-        
         Connection srcconn = DriverManager.getConnection( srcurl, user, password);
         Statement srcst = srcconn.createStatement();
-        String srcsql = Command.getSelectOneRowSQL( source_dbtype, table );
-        ResultSet metars = srcst.executeQuery( srcsql);
-        ResultSetMetaData srcmeta = metars.getMetaData();
-        String[] columnNames = new String[ srcmeta.getColumnCount()];
-        for(int i = 1; i <= srcmeta.getColumnCount(); i++) {
-            columnNames[i - 1] = srcmeta.getColumnName(i).toLowerCase();
-			logit("Column [" + columnNames[i-1] + "]" );
-        }
-        srcst.close();
-        metars.close();
-        
         // dest database
         String desturl = appProp.getProperty(DEST_JDBCURL).toLowerCase();
-        if (DEBUG) {
-            logit("desturl " + desturl);
-        }
-        String changeLog = appProp.getProperty(CHANGE_LOG);
+        logit("desturl " + desturl);
         String keep_rows = appProp.getProperty(KEEP_ROWS, "10000");
 		long keeprows = Long.parseLong( keep_rows );
-        PreparedStatement updateLogPS = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
-
         String destuser = appProp.getProperty(DEST_USER);
         String destpassword = appProp.getProperty(DEST_PASSWORD);
-        DBAccess destdb = new DBAccess( desturl, destuser, destpassword, table, keys, columnNames, DEBUG );
-        destdb.init();
+
+
+
+        // String table = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
+        String tables = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
+		logit("Jaguar SyncServer started for table " + tables + " ...");
+		String tabarr[] = JagUtil.splitString( tables, "|" );
+        String keys = appProp.getProperty(KEYS).toLowerCase();
+		String keyarr[] = JagUtil.splitString( keys, "|" );
+		int tablen = tabarr.length;
+		String lastID[] = new String[tablen];
+		String lastTS[] = new String[tablen];
+
+		// prepare init objects
+		PreparedStatement  updateLogPSArr[] = new PreparedStatement[tablen];
+		String columnNameStr[] = new String[tablen];
+		DBAccess destdbarr[] = new DBAccess[tablen];
+		for ( int i = 0; i < tablen; ++i ) {
+			String table = tabarr[i];
+        	String changeLog = table + "_jagchangelog";
+
+            String srcsql = Command.getSelectOneRowSQL( source_dbtype, table );
+            ResultSet metars = srcst.executeQuery( srcsql);
+            ResultSetMetaData srcmeta = metars.getMetaData();
+            String[] columnNames = new String[ srcmeta.getColumnCount()];
+            for(int j = 1; j <= srcmeta.getColumnCount(); j++) {
+                columnNames[j - 1] = srcmeta.getColumnName(j).toLowerCase();
+            }
+			columnNameStr[i] = String.join(",", columnNames );
+            srcst.close();
+            metars.close();
+
+			String tabkeys = keyarr[i];
+			String karr[] = JagUtil.splitString( tabkeys, "," );
+            updateLogPSArr[i] = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
+			destdbarr[i] = new DBAccess( desturl, destuser, destpassword, table, karr, columnNames, DEBUG );
+			destdbarr[i].init();
+		}
+
         
         long total = 0;
-		String  lastID="0", lastTS="0";
+		for ( int i = 0; i < tablen; ++i ) {
+			lastID[i] = "0"; lastTS[i] = "0";
+		}
 		String action, status, ts, id;
 		long changenum = 0;
         while ( true ) {
             Properties appPropNew = new Properties();
             appPropNew.load(new FileReader(appConf));
-            if (Boolean.parseBoolean(appPropNew.getProperty(STOP))) {
-                break;
-            }
-        	DEBUG = Boolean.parseBoolean(appPropNew.getProperty("debug"));
-     
-            // srcst = srcconn.createStatement( ResultSet.TYPE_SCROLL_SENSITIVE );
-            srcst = srcconn.createStatement( );
-            srcsql = "select * from " + changeLog + " where status_='N'";
-           	if (DEBUG) { logit("srcsql  " + srcsql ); }
-            ResultSet changers = srcst.executeQuery( srcsql);
-            while ( changers.next()) {
-				++ changenum;
-           		if (DEBUG) { logit("inside changers.next() " + changers.toString() ); }
-                action = changers.getString("action_");
-                status = changers.getString("status_");
-                ts = changers.getString("ts_");
-                id = changers.getString("id_");
-				if ( DEBUG ) {
-                	logit(" id=" + id + " action=" + action + " status=" + status + " ts=" + ts );
-				}
-				lastID = id.toString();
-				lastTS = ts;
+            if (Boolean.parseBoolean(appPropNew.getProperty(STOP))) { break; }
+            DEBUG = Boolean.parseBoolean(appPropNew.getProperty("debug"));
 
-                if (I.equals(action)) {
-            		if (DEBUG) { logit("Insert " ); }
-                    try {
-            			if (DEBUG) { logit("destdb.doInsert " ); }
-                        destdb.doInsert( changers);
-                    } catch (Exception e) {
-                        if (DEBUG) {
-                            e.printStackTrace();
+			for ( int ti = 0; ti < tablen; ++ ti ) {
+				String table = tabarr[ti];
+        		String changeLog = table + "_jagchangelog";
+                PreparedStatement updateLogPS = updateLogPSArr[ti];
+                DBAccess destdb = destdbarr[ti];
+                // srcst = srcconn.createStatement( ResultSet.TYPE_SCROLL_SENSITIVE );
+                srcst = srcconn.createStatement( );
+                String srcsql = "select * from " + changeLog + " where status_='N'";
+               	if (DEBUG) { logit("srcsql  " + srcsql ); }
+                ResultSet changers = srcst.executeQuery( srcsql);
+                while ( changers.next()) {
+    				++ changenum;
+               		if (DEBUG) { logit("inside changers.next() " + changers.toString() ); }
+                    action = changers.getString("action_");
+                    status = changers.getString("status_");
+                    ts = changers.getString("ts_");
+                    id = changers.getString("id_");
+    				if ( DEBUG ) {
+                    	logit(" id=" + id + " action=" + action + " status=" + status + " ts=" + ts );
+    				}
+    				lastID[ti] = id.toString();
+    				lastTS[ti] = ts;
+    
+                    if (I.equals(action)) {
+                		if (DEBUG) { logit("Insert " ); }
+                        try {
+                			if (DEBUG) { logit("destdb.doInsert " ); }
+                            destdb.doInsert( changers);
+                        } catch (Exception e) {
+                            if (DEBUG) {
+                                e.printStackTrace();
+                            }
+                			if (DEBUG) { logit("destdb.doUpdate " ); }
+                            destdb.doUpdate( changers);
                         }
-            			if (DEBUG) { logit("destdb.doUpdate " ); }
-                        destdb.doUpdate( changers);
-                    }
-                } else if (U.equals(action)) {
-            		if (DEBUG) { logit("Update " ); }
-                    if (destdb.doUpdate( changers) == 0) {
-            			if (DEBUG) { logit("destdb.doInsert " ); }
-                        destdb.doInsert( changers);
-                    }
-                } else if (D.equals(action)) {
-            		if (DEBUG) { logit("destdb.doDelete " ); }
-                    destdb.doDelete( changers);
-                } else {
-            		if (DEBUG) { logit("Unknown action " + action ); }
-				}
+                    } else if (U.equals(action)) {
+                		if (DEBUG) { logit("Update " ); }
+                        if (destdb.doUpdate( changers) == 0) {
+                			if (DEBUG) { logit("destdb.doInsert " ); }
+                            destdb.doInsert( changers);
+                        }
+                    } else if (D.equals(action)) {
+                		if (DEBUG) { logit("destdb.doDelete " ); }
+                        destdb.doDelete( changers);
+                    } else {
+                		if (DEBUG) { logit("Unknown action " + action ); }
+    				}
+                    
+                    //update log status
+                    updateLogPS.clearParameters();
+                    updateLogPS.setObject(1, id);
+    
+                    updateLogPS.executeUpdate();
+               		if (DEBUG) { logit("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
+                    
+                    total++;
+                }
                 
-                //update log status
-                updateLogPS.clearParameters();
-                updateLogPS.setObject(1, id);
+                srcst.close();
+                changers.close();
+        		destdb.close();
+                if (DEBUG) {
+                    logit("changenum=" + changenum + " lastID=" + lastID[ti] + " lastTS=" + lastTS[ti] );
+                    logit("Sleep " + sleepms + " millisecs ...");
+                }
+                Thread.sleep(Long.parseLong( sleepms ) );
+    
+    			// periodically cleanup changelog table
+    			long lastid = Long.parseLong( lastID[ti] );
+    			if ( ( (lastid + 1) % keeprows ) == 0 ) {
+    				long pastid = lastid - keeprows;
+            		Statement chst = srcconn.createStatement();
+            		String sql = "delete from " + changeLog + " where id_ < " + pastid;
+            		chst.executeUpdate( sql);
+    				chst.close();
+    			}
 
-                updateLogPS.executeUpdate();
-           		if (DEBUG) { logit("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
-                
-                total++;
-            }
-            
-            srcst.close();
-            changers.close();
-            if (DEBUG) {
-                logit("changenum=" + changenum + " lastID=" + lastID + " lastTS=" + lastTS );
-                logit("Sleep " + sleepms + " millisecs ...");
-            }
-            Thread.sleep(Long.parseLong( sleepms ) );
+        		updateLogPS.close();
 
-			// periodically cleanup changelog table
-			long lastid = Long.parseLong( lastID );
-			if ( ( (lastid + 1) % keeprows ) == 0 ) {
-				long pastid = lastid - keeprows;
-        		Statement chst = srcconn.createStatement();
-        		String sql = "delete from " + changeLog + " where id_ < " + pastid;
-        		chst.executeUpdate( sql);
-				chst.close();
-			}
+			}  // next table
         }
 
-        updateLogPS.close();
         srcconn.close();
-        destdb.close();
             
         logit( "Total rows synched: " + total);
-        logit( "Changelog lastID " + lastID + " lastTS " + lastTS );
+		for ( int i = 0; i < tablen; ++i ) {
+        	logit( "Table " + tabarr[i] + " changelog lastID " + lastID[i] + " lastTS " + lastTS[i] );
+		}
 		File file = new File("java.lock");
 		file.delete();
 

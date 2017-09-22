@@ -4,23 +4,25 @@
 ## Create changelog table for a table in Oralce. Also creates triggers
 ## to track DML (insert, update, delete in Oracle table
 ##
-## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE>  <ORACLE_CHANGELOG_TABLE> [host:port/service]
+## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE>  [host:port/service]
 ##
-##  where host is oracle host name or IP, port is oracle listener port, service is its service name
-##  Option host:port/service is optional
+##  where ORACLE_TABLE is oracle table name,
+##  host is oracle host name or IP, port is oracle listener port, service is its service name
+##  [host:port/service] is optional and is not necessary. 
 ##
 ##########################################################################################
 
 table=$1
-changelog=$2
-remotecfg=$3
+remotecfg=$2
 
-if [[ "x$changelog" = "x" ]]; then
-	echo "Usage:     $0  <TABLE_NAME> <CHANGELOG_TABLE>"
-	echo "Example:   $0  table123  table123_changelog"
-	echo "Make sure CHANGELOG_TABLE does not exist"
+if [[ "x$table" = "x" ]]; then
+	echo "Usage:     $0  <TABLE_NAME> [host:port/service]"
+	echo "Example:   $0  table123"
+	echo "Example:   $0  table123 192.168.7.120:1522/orclservice"
 	exit 1
 fi
+
+changelog="${table}_jagchangelog"
 
 pd=`pwd`
 dirn="tmpdir$$"
