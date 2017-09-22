@@ -1,5 +1,7 @@
 #!/bin/bash
 
+unset _JAVA_OPTIONS
+
 pd=`pwd`
 export ANT_HOME=$pd/../util/apache-ant-1.10.1
 if [[ ! -d "$ANT_HOME" ]]; then

@@ -26,6 +26,6 @@ fi
 touch java.lock
 sed -i "s/.*stop=.*/#stop=true/g" appconf.oracle
 
-java -cp $LIB/ojdbc6.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/jdbcsql.jar \
+java -cp $LIB/ojdbc6_11g.jar:$LIB/jaguar-jdbc-2.0.jar:$LIB/jdbcsql.jar \
     -Dappconf=appconf.oracle com.jaguar.jdbcsql.Sync > sync_oracle_to_jaguar.log &
 

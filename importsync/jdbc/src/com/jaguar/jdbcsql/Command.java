@@ -44,7 +44,12 @@ public class Command
 			return;
 		}
     	
-        String debug = appProp.getProperty(DEBUG).toLowerCase();
+        String debug = appProp.getProperty(DEBUG);
+        if ( null == debug) {
+			debug = "false";
+		} else {
+			debug = debug.toLowerCase();
+		}
         String command = appProp.getProperty(COMMAND).toLowerCase();
         String srcurl = appProp.getProperty(SOURCE_JDBC_URL);
         String user = appProp.getProperty(SOURCE_USER);

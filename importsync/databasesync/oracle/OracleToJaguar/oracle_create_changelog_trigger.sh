@@ -15,17 +15,17 @@ table=$1
 changelog=$2
 remotecfg=$3
 
-pd=`pwd`
-dirn="tmpdir$$"
-/bin/mkdir -p $dirn
-cd $dirn
-
 if [[ "x$changelog" = "x" ]]; then
 	echo "Usage:     $0  <TABLE_NAME> <CHANGELOG_TABLE>"
 	echo "Example:   $0  table123  table123_changelog"
 	echo "Make sure CHANGELOG_TABLE does not exist"
 	exit 1
 fi
+
+pd=`pwd`
+dirn="tmpdir$$"
+/bin/mkdir -p $dirn
+cd $dirn
 
 if [[ "x$remotecfg" != "x" ]]; then
 	remotecfg="@$remotecfg"
