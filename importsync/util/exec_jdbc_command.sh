@@ -16,8 +16,8 @@ fi
 unset _JAVA_OPTIONS
 dn=`dirname $0`
 LIB="$dn/../jdbc/lib"
-JAR="$LIB/ojdbc6.jar"
-JAR="$JAR:$LIB/mysql-connector-java-5.1.43-bin.jar"
+JAR="$LIB/ojdbc6_11g.jar"
+JAR="$JAR:$LIB/mysql-connector-java-5.1.44-bin.jar"
 JAR="$JAR:$LIB/postgresql-42.1.4.jar"
 JAR="$JAR:$LIB/jaguar-jdbc-2.0.jar"
 JAR="$JAR:$LIB/jdbcsql.jar"
