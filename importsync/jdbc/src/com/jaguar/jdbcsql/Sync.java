@@ -105,7 +105,6 @@ public class Sync
                 columnNames[j - 1] = srcmeta.getColumnName(j).toLowerCase();
             }
 			columnNameStr[i] = String.join(",", columnNames );
-            srcst.close();
             metars.close();
 
 			String tabkeys = keyarr[i];
@@ -134,7 +133,6 @@ public class Sync
                 PreparedStatement updateLogPS = updateLogPSArr[ti];
                 DBAccess destdb = destdbarr[ti];
                 // srcst = srcconn.createStatement( ResultSet.TYPE_SCROLL_SENSITIVE );
-                srcst = srcconn.createStatement( );
                 String srcsql = "select * from " + changeLog + " where status_='N'";
                	if (DEBUG) { logit("srcsql  " + srcsql ); }
                 ResultSet changers = srcst.executeQuery( srcsql);
@@ -186,9 +184,7 @@ public class Sync
                     total++;
                 }
                 
-                srcst.close();
                 changers.close();
-        		destdb.close();
                 if (DEBUG) {
                     logit("changenum=" + changenum + " lastID=" + lastID[ti] + " lastTS=" + lastTS[ti] );
                     logit("Sleep " + sleepms + " millisecs ...");
@@ -205,7 +201,7 @@ public class Sync
     				chst.close();
     			}
 
-        		updateLogPS.close();
+        		// updateLogPS.close();
 
 			}  // next table
         }
@@ -215,6 +211,8 @@ public class Sync
         logit( "Total rows synched: " + total);
 		for ( int i = 0; i < tablen; ++i ) {
         	logit( "Table " + tabarr[i] + " changelog lastID " + lastID[i] + " lastTS " + lastTS[i] );
+            updateLogPSArr[i].close();
+			destdbarr[i].close();
 		}
 		File file = new File("java.lock");
 		file.delete();
