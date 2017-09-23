@@ -57,7 +57,7 @@ public class Importer
         String tables = appProp.getProperty(SOURCE_TABLE).toLowerCase();
         Connection sconn = DriverManager.getConnection(srcurl, user, password);
         Statement srcst = sconn.createStatement();
-		String tabs[] = JagUtil.splitString( tables, "|" );
+		String tabs[] = JagUtil.splitString( tables, "[|]" );
 		int tablen = tabs.length;
 
         // dest database

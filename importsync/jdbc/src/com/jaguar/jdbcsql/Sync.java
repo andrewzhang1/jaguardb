@@ -82,9 +82,9 @@ public class Sync
         // String table = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
         String tables = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
 		logit("Jaguar SyncServer started for table " + tables + " ...");
-		String tabarr[] = JagUtil.splitString( tables, "|" );
+		String tabarr[] = JagUtil.splitString( tables, "[|]" );
         String keys = appProp.getProperty(KEYS).toLowerCase();
-		String keyarr[] = JagUtil.splitString( keys, "|" );
+		String keyarr[] = JagUtil.splitString( keys, "[|]" );
 		int tablen = tabarr.length;
 		String lastID[] = new String[tablen];
 		String lastTS[] = new String[tablen];
