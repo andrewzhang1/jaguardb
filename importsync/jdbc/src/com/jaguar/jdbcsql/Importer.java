@@ -70,8 +70,8 @@ public class Importer
 
 		for ( int ti = 0; ti < tablen; ++ti ) {
 			String table = tabs[ti];
-    		String onesql = Command.getSelectOneRowSQL( source_dbtype, table );
-            ResultSet srcrs = srcst.executeQuery( onesql );
+    		String allsql = "select * from " + table;
+            ResultSet srcrs = srcst.executeQuery( allsql );
             ResultSetMetaData srcmeta = srcrs.getMetaData();
             int ncols = srcmeta.getColumnCount();
     		String colnames[] = new String[ncols];
