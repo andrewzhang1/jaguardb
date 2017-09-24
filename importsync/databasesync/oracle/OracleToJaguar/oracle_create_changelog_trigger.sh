@@ -144,22 +144,44 @@ echo "Created insert trigger ${table}_jagtrgins"
 echo "CREATE OR REPLACE TRIGGER ${table}_jagtrgupd AFTER UPDATE ON ${table}" > $cmd
 echo "  FOR EACH ROW" >> $cmd
 echo "  BEGIN" >> $cmd
+
+### remove old record
 echo "    INSERT INTO $changelog values (" >> $cmd
 echo "        ${changelog}_jidseq.nextval," >> $cmd
 echo "        sysdate," >> $cmd
-echo "        'U'," >> $cmd
+echo "        'D'," >> $cmd
 echo "        'N'," >> $cmd
 ((n=1))
-while read line
+while read col
 do
 	if ((n<numlines)); then
-		echo "        :new.$line," >> $cmd
+		echo "        :old.$col," >> $cmd
 	else
-		echo "        :new.$line" >> $cmd
+		echo "        :old.$col" >> $cmd
 	fi
 	((n=n+1))
 done < $desccolrc
 echo  "        );" >> $cmd
+
+### insert new record
+echo "    INSERT INTO $changelog values (" >> $cmd
+echo "        ${changelog}_jidseq.nextval," >> $cmd
+echo "        sysdate," >> $cmd
+echo "        'I'," >> $cmd
+echo "        'N'," >> $cmd
+((n=1))
+while read col
+do
+	if ((n<numlines)); then
+		echo "        :new.$col," >> $cmd
+	else
+		echo "        :new.$col" >> $cmd
+	fi
+	((n=n+1))
+done < $desccolrc
+echo  "        );" >> $cmd
+
+
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
 sqlplus -S $uid/$pass$remotecfg < $cmd
