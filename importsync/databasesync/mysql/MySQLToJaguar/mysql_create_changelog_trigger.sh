@@ -4,23 +4,25 @@
 ## Create changelog table for a table in MySQL Also creates triggers
 ## to track DML (insert, update, delete in Oracle table
 ##
-## Usage:   ./mysql_create_changelog_trigger.sh  <DATABASE> <MYSQL_TABLE>  <MUYSQL_CHANGELOG_TABLE>
+## Usage:   ./mysql_create_changelog_trigger.sh  <DATABASE> <MYSQL_TABLE>  <MYSQL_USER> <MYSQL_PASSWORD>
 ##
 ##########################################################################################
 
 mydb=$1
 table=$2
-changelog=$3
+uid=$3
+pass=$4
 
 
-if [[ "x$changelog" = "x" ]]; then
-	echo "Usage:     $0  <DATABASE> <TABLE_NAME> <CHANGELOG_TABLE>"
+if [[ "x$pass" = "x" ]]; then
+	echo "Usage:     $0  <DATABASE> <TABLE_NAME> <MYSQL_USER> <MYSQL_PASSWORD>"
 	echo
-	echo "Example:   $0  mydb  table123  table123_changelog"
+	echo "Example:   $0  mydb  table123  user123 pass123"
 	echo
-	echo "Make sure CHANGELOG_TABLE does not exist"
 	exit 1
 fi
+
+changelog="${table}_jagchangelog"
 
 pd=`pwd`
 dirn="tmpdir$$"
@@ -31,13 +33,6 @@ cd $dirn
 cmd="tmpcmd.sql"
 log="describe.log"
 echo "describe $table;" > $cmd
-
-echo -n "Enter MySQL user name: "
-read uid
-
-echo -n "Enter $uid password: "
-read -s pass
-echo
 
 mysql -s -u$uid -p$pass $mydb < $cmd  > $log 2>&1
 /bin/rm -f $cmd
@@ -64,15 +59,7 @@ if grep -i error $log; then
 else
 	((changelogExist=1))
 	echo "Table $changelog exists already."
-	echo -n "Are you sure you want to drop it and create a new table with the same name? (y|n) "
-	read ans
-	if [[ "x$ans" != "xy" ]]; then
-		echo "quit, please try again with a different changelog table name"
-		/bin/rm -f $log
-		cd $pd
-		/bin/rm -rf $dirn
-		exit 1
-	fi
+	echo "Table $changelog will be dropped and recreated."
 fi
 
 /bin/rm -f $log
@@ -151,6 +138,7 @@ echo "drop trigger if exists ${table}_jagtrgupd;" > $cmd
 echo "DELIMITER \$\$" >> $cmd
 echo "CREATE TRIGGER ${table}_jagtrgupd AFTER UPDATE ON ${table} FOR EACH ROW" >> $cmd
 echo "  BEGIN" >> $cmd
+
 echo "    INSERT INTO $changelog ( ts_, action_, status_, "  >> $cmd
 ((n=1))
 while read col; do
@@ -163,18 +151,46 @@ while read col; do
 done < $desccolrc
 echo "    ) values ( "  >> $cmd
 echo "        now()," >> $cmd
-echo "        'U'," >> $cmd
+echo "        'D'," >> $cmd
 echo "        'N'," >> $cmd
 ((n=1))
-while read line; do
+while read col; do
 	if ((n<numlines)); then
-		echo "        new.$line," >> $cmd
+		echo "        old.$col," >> $cmd
 	else
-		echo "        new.$line" >> $cmd
+		echo "        old.$col" >> $cmd
 	fi
 	((n=n+1))
 done < $desccolrc
 echo  "        );" >> $cmd
+
+echo "    INSERT INTO $changelog ( ts_, action_, status_, "  >> $cmd
+((n=1))
+while read col; do
+	if ((n<numlines)); then
+		echo "  $col," >> $cmd
+	else
+		echo "  $col" >> $cmd
+	fi
+	((n=n+1))
+done < $desccolrc
+echo "    ) values ( "  >> $cmd
+echo "        now()," >> $cmd
+echo "        'I'," >> $cmd
+echo "        'N'," >> $cmd
+((n=1))
+while read col; do
+	if ((n<numlines)); then
+		echo "        new.$col," >> $cmd
+	else
+		echo "        new.$col" >> $cmd
+	fi
+	((n=n+1))
+done < $desccolrc
+echo  "        );" >> $cmd
+
+
+
 echo  " END\$\$" >> $cmd
 echo  "DELIMITER ;" >> $cmd
 mysql -s -u$uid -p$pass $mydb < $cmd > /dev/null 2>&1
@@ -202,11 +218,11 @@ echo "        now()," >> $cmd
 echo "        'D'," >> $cmd
 echo "        'N'," >> $cmd
 ((n=1))
-while read line; do
+while read col; do
 	if ((n<numlines)); then
-		echo "        old.$line," >> $cmd
+		echo "        old.$col," >> $cmd
 	else
-		echo "        old.$line" >> $cmd
+		echo "        old.$col" >> $cmd
 	fi
 	((n=n+1))
 done < $desccolrc
