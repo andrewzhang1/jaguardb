@@ -158,12 +158,6 @@ public class Sync
                 			if (DEBUG) { logit("destdb.doUpdate " ); }
                             destdb.doUpdate( changers);
                         }
-                    } else if (U.equals(action)) {
-                		if (DEBUG) { logit("Update " ); }
-                        if (destdb.doUpdate( changers) == 0) {
-                			if (DEBUG) { logit("destdb.doInsert " ); }
-                            destdb.doInsert( changers);
-                        }
                     } else if (D.equals(action)) {
                 		if (DEBUG) { logit("destdb.doDelete " ); }
                         destdb.doDelete( changers);
