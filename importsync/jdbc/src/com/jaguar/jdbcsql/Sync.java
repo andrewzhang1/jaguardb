@@ -90,7 +90,6 @@ public class Sync
 		String lastTS[] = new String[tablen];
 
 		// prepare init objects
-		PreparedStatement  updateLogPSArr[] = new PreparedStatement[tablen];
 		String columnNameStr[] = new String[tablen];
 		DBAccess destdbarr[] = new DBAccess[tablen];
 		for ( int i = 0; i < tablen; ++i ) {
@@ -109,7 +108,6 @@ public class Sync
 
 			String tabkeys = keyarr[i];
 			String karr[] = JagUtil.splitString( tabkeys, "," );
-            updateLogPSArr[i] = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
 			destdbarr[i] = new DBAccess( desturl, destuser, destpassword, table, karr, columnNames, DEBUG );
 			destdbarr[i].init();
 		}
@@ -130,7 +128,6 @@ public class Sync
 			for ( int ti = 0; ti < tablen; ++ ti ) {
 				String table = tabarr[ti];
         		String changeLog = table + "_jagchangelog";
-                PreparedStatement updateLogPS = updateLogPSArr[ti];
                 DBAccess destdb = destdbarr[ti];
                 // srcst = srcconn.createStatement( ResultSet.TYPE_SCROLL_SENSITIVE );
                 String srcsql = "select * from " + changeLog + " where status_='N'";
@@ -174,12 +171,6 @@ public class Sync
                 		if (DEBUG) { logit("Unknown action " + action ); }
     				}
                     
-                    //update log status
-                    updateLogPS.clearParameters();
-                    updateLogPS.setObject(1, id);
-    
-                    updateLogPS.executeUpdate();
-               		if (DEBUG) { logit("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
                     
                     total++;
                 }
@@ -201,7 +192,6 @@ public class Sync
     				chst.close();
     			}
 
-        		// updateLogPS.close();
 
 			}  // next table
         }
@@ -211,7 +201,6 @@ public class Sync
         logit( "Total rows synched: " + total);
 		for ( int i = 0; i < tablen; ++i ) {
         	logit( "Table " + tabarr[i] + " changelog lastID " + lastID[i] + " lastTS " + lastTS[i] );
-            updateLogPSArr[i].close();
 			destdbarr[i].close();
 		}
 		File file = new File("java.lock");
