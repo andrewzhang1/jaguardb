@@ -4,7 +4,7 @@
 ## Create changelog table for a table in Oralce. Also creates triggers
 ## to track DML (insert, update, delete in Oracle table
 ##
-## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE>  [host:port/service]
+## Usage:   ./oracle_create_changelog_trigger.sh  <ORACLE_TABLE> <ORACLE_USER> <ORACLE_PASSWORD>  [host:port/service]
 ##
 ##  where ORACLE_TABLE is oracle table name,
 ##  host is oracle host name or IP, port is oracle listener port, service is its service name
@@ -13,12 +13,22 @@
 ##########################################################################################
 
 table=$1
-remotecfg=$2
+ouid=$2
+opass=$3
+remotecfg=$4
 
-if [[ "x$table" = "x" ]]; then
-	echo "Usage:     $0  <TABLE_NAME> [host:port/service]"
-	echo "Example:   $0  table123"
-	echo "Example:   $0  table123 192.168.7.120:1522/orclservice"
+if [[ "x$opass" = "x" ]]; then
+	echo "Usage:     $0  <TABLE_NAME> <ORACLE_USER> <ORACLE_PASSWORD> [host:port/service]"
+	echo "               Option [host:port/service] is required only when Oracle is on remote host"
+	echo "Example:   $0  table123 oracleuid oraclepass"
+	echo "Example:   $0  table123 oracleuid passwd333 192.168.7.120:1522/orclservice"
+	exit 1
+fi
+
+if type sqlplus 2>/dev/null; then
+	echo "OK  found sqlplus"
+else
+	echo "sqlplus not found, quit"
 	exit 1
 fi
 
@@ -39,14 +49,14 @@ echo "spool $log;" > $cmd
 echo "describe $table;" >> $cmd
 echo "spool off;" >> $cmd
 
-echo -n "Eenter Oracle user name: "
-read uid
+sqlplus -S $ouid/$opass$remotecfg < $cmd > err.log
+if [[ ! -f $log ]]; then
+	cat err.log
+	cd ..
+	/bin/rm -rf $dirn
+	exit 1
+fi
 
-echo -n "Eenter Oracle user password: "
-read -s pass
-echo
-
-sqlplus -S $uid/$pass$remotecfg < $cmd  >/dev/null
 /bin/rm -f $cmd
 descrc="describe_${table}.txt"
 desccolrc="describe_${table}_colname.txt"
@@ -54,7 +64,7 @@ cat $log|grep -v 'SQL>' |grep -vi 'null?'|grep -v '\-\-\-\-\-\-\-'|sed -e 's/not
 /bin/rm -f $log
 awk '{print $1}' $descrc > $desccolrc
 
-echo "describe $changelog;" | sqlplus -S $uid/$pass$remotecfg > $log 2>&1
+echo "describe $changelog;" | sqlplus -S $ouid/$opass$remotecfg > $log 2>&1
 ((changelogExist=0))
 if grep -i error $log; then
 	echo "OK, $changelog does not exist, use $changelog as changelog table"
@@ -62,15 +72,7 @@ if grep -i error $log; then
 else
 	((changelogExist=1))
 	echo "Table $changelog exists already."
-	echo -n "Are you sure you want to drop it and create a new table with the same name? (y|n) "
-	read ans
-	if [[ "x$ans" != "xy" ]]; then
-		echo "quit, please try again with a different changelog table name"
-		/bin/rm -f $log
-		cd $pd
-		/bin/rm -rf $dirn
-		exit 1
-	fi
+	echo "Table $changelog will be dropped and recreated."
 fi
 
 /bin/rm -f $log
@@ -102,15 +104,15 @@ cmd2="${cmd}.tmprc"
 tr '[:upper:]' '[:lower:]' < $cmd > $cmd2
 /bin/mv -f $cmd2 $cmd
 
-sqlplus -S $uid/$pass$remotecfg < $cmd
+sqlplus -S $ouid/$opass$remotecfg < $cmd
 echo "Created $changelog"
-echo "describe $changelog;" | sqlplus -S $uid/$pass$remotecfg 
+echo "describe $changelog;" | sqlplus -S $ouid/$opass$remotecfg 
 
 
 ##################### create oracle sequence
 echo "drop sequence ${changelog}_jidseq;" > $cmd
 echo "create sequence ${changelog}_jidseq start with 1;" >> $cmd 
-sqlplus -S $uid/$pass$remotecfg < $cmd > /dev/null 2>&1
+sqlplus -S $ouid/$opass$remotecfg < $cmd > /dev/null 2>&1
 echo "Created sequence ${changelog}_jidseq"
 
 
@@ -136,7 +138,7 @@ done < $desccolrc
 echo  "        );" >> $cmd
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass$remotecfg < $cmd
+sqlplus -S $ouid/$opass$remotecfg < $cmd
 echo "Created insert trigger ${table}_jagtrgins"
 
 
@@ -184,7 +186,7 @@ echo  "        );" >> $cmd
 
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass$remotecfg < $cmd
+sqlplus -S $ouid/$opass$remotecfg < $cmd
 echo "Created update trigger ${table}_jagtrgupd"
 
 
@@ -210,7 +212,7 @@ done < $desccolrc
 echo  "        );" >> $cmd
 echo  " END;" >> $cmd
 echo  " /" >> $cmd
-sqlplus -S $uid/$pass$remotecfg < $cmd
+sqlplus -S $ouid/$opass$remotecfg < $cmd
 echo "Created delete trigger ${table}_jagdel"
 
 
