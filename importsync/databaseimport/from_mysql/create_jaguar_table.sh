@@ -112,7 +112,6 @@ awk -F'|' '{print $2}' $descrc > $desctyperc
 
 
 ##################### get key columns of mysql table
-TABLE=`echo $table | tr '[:lower:]' '[:upper:]'`
 lowtable=`echo $table | tr '[:upper:]' '[:lower:]'`
 sed -i "s/command=.*/command=pkey/g" $appconf
 $exec_cmd $appconf > keycols.txt
@@ -187,12 +186,17 @@ cat $cmd
 jaguid=admin
 jagport=`cat $JAGUAR_HOME/jaguar/conf/server.conf |grep PORT|grep -v '#'|cut -d= -f2`
 uo=`uname -o`
-echo "Creating table, please wait a few seconds ..."
+
 if [[ "x$uo" = "xMsys" ]] || [[ "x$uo" = "xCygwin" ]]; then
-	$JAGUAR_HOME/jaguar/bin/jql.exe -u $jaguid -p $jagpass -h :$jagport -d $jagdb -f $cmd -q
+    jql="jql.exe"
 else
-	$JAGUAR_HOME/jaguar/bin/jql.bin -u $jaguid -p $jagpass -h :$jagport -d $jagdb -f $cmd -q
+    jql="jql.bin"
 fi
+
+echo "Creating database $jagdb, please wait ..."
+$JAGUAR_HOME/jaguar/bin/$jql -u $jaguid -p $jagpass -h :$jagport -d test -e "createdb $jagdb"
+echo "Creating table $lowtable, please wait a few seconds ..."
+$JAGUAR_HOME/jaguar/bin/$jql -u $jaguid -p $jagpass -h :$jagport -d $jagdb -f $cmd -q
 
 cd $pd
 /bin/rm -rf $dirn
