@@ -28,7 +28,6 @@ public class Sync
     private static final String DEST_PASSWORD = "dest_password";
     private static final String DEST_USER = "dest_user";
     private static final String SLEEP_IN_MILLIS = "sleep_in_millis";
-    private static final String KEYS = "keys";
     private static final String STOP = "stop";
     private static final String KEEP_ROWS = "keep_rows";
     private static final String D = "D";
@@ -41,6 +40,7 @@ public class Sync
         String appConf = System.getProperty(APP_CONF);
         if (appConf == null) {
             logit("Usage: java -cp jar1:jar2:... -Dappconf=<config_file> " + Sync.class.getName());
+			File file = new File("java.lock"); file.delete();
             return;
         }
 
@@ -52,6 +52,7 @@ public class Sync
         } catch (Exception e) {
             e.printStackTrace();
 			logit("Jaguar SyncServer stopped");
+			File file = new File("java.lock"); file.delete();
 			System.exit(1);
         }
 
@@ -67,7 +68,16 @@ public class Sync
         String user = appProp.getProperty(SOURCE_USER);
         String password = appProp.getProperty(SOURCE_PASSWORD);
 		logit("Source database user is " + user );
-        Connection srcconn = DriverManager.getConnection( srcurl, user, password);
+        Connection srcconn = null;
+		try {
+        	srcconn = DriverManager.getConnection( srcurl, user, password);
+		} catch ( Exception e ) {
+			logit("Jaguar SyncServer stopped");
+			File file = new File("java.lock"); file.delete();
+            e.printStackTrace();
+			return;
+		}
+
         Statement srcst = srcconn.createStatement();
         // dest database
         String desturl = appProp.getProperty(DEST_JDBCURL).toLowerCase();
@@ -78,16 +88,14 @@ public class Sync
         String destpassword = appProp.getProperty(DEST_PASSWORD);
 
 
-
         // String table = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
         String tables = appProp.getProperty(SOURCE_TABLE).toLowerCase(); 
 		logit("Jaguar SyncServer started for table " + tables + " ...");
 		String tabarr[] = JagUtil.splitString( tables, "[|]" );
-        String keys = appProp.getProperty(KEYS).toLowerCase();
-		String keyarr[] = JagUtil.splitString( keys, "[|]" );
 		int tablen = tabarr.length;
 		String lastID[] = new String[tablen];
 		String lastTS[] = new String[tablen];
+		PreparedStatement updateLogPSArr[]  = new PreparedStatement[tablen];
 
 		// prepare init objects
 		String columnNameStr[] = new String[tablen];
@@ -106,10 +114,17 @@ public class Sync
 			columnNameStr[i] = String.join(",", columnNames );
             metars.close();
 
-			String tabkeys = keyarr[i];
-			String karr[] = JagUtil.splitString( tabkeys, "," );
-			destdbarr[i] = new DBAccess( desturl, destuser, destpassword, table, karr, columnNames, DEBUG );
-			destdbarr[i].init();
+			updateLogPSArr[i] = srcconn.prepareStatement("update " + changeLog + " set status_='D' where id_=?");
+
+			try {
+				destdbarr[i] = new DBAccess( desturl, destuser, destpassword, table, columnNames, DEBUG );
+				destdbarr[i].init();
+			} catch ( Exception e ) {
+				logit("Jaguar SyncServer stopped");
+				File file = new File("java.lock"); file.delete();
+            	e.printStackTrace();
+				return;
+			}
 		}
 
         
@@ -120,6 +135,7 @@ public class Sync
 		String action, status, ts, id;
 		long changenum = 0;
         while ( true ) {
+			changenum = 0;
             Properties appPropNew = new Properties();
             appPropNew.load(new FileReader(appConf));
             if (Boolean.parseBoolean(appPropNew.getProperty(STOP))) { break; }
@@ -133,8 +149,8 @@ public class Sync
                 String srcsql = "select * from " + changeLog + " where status_='N'";
                	if (DEBUG) { logit("srcsql  " + srcsql ); }
                 ResultSet changers = srcst.executeQuery( srcsql);
+				PreparedStatement updateLogPS = updateLogPSArr[ti];
                 while ( changers.next()) {
-    				++ changenum;
                		if (DEBUG) { logit("inside changers.next() " + changers.toString() ); }
                     action = changers.getString("action_");
                     status = changers.getString("status_");
@@ -151,20 +167,25 @@ public class Sync
                         try {
                 			if (DEBUG) { logit("destdb.doInsert " ); }
                             destdb.doInsert( changers);
+    						++ changenum;
                         } catch (Exception e) {
                             if (DEBUG) {
                                 e.printStackTrace();
                             }
-                			if (DEBUG) { logit("destdb.doUpdate " ); }
-                            destdb.doUpdate( changers);
                         }
                     } else if (D.equals(action)) {
                 		if (DEBUG) { logit("destdb.doDelete " ); }
                         destdb.doDelete( changers);
+    					++ changenum;
                     } else {
                 		if (DEBUG) { logit("Unknown action " + action ); }
     				}
                     
+                    //update log status
+                    updateLogPS.clearParameters();
+                    updateLogPS.setObject(1, id);
+                    updateLogPS.executeUpdate();
+                    if (DEBUG) { logit("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
                     
                     total++;
                 }
@@ -196,6 +217,7 @@ public class Sync
 		for ( int i = 0; i < tablen; ++i ) {
         	logit( "Table " + tabarr[i] + " changelog lastID " + lastID[i] + " lastTS " + lastTS[i] );
 			destdbarr[i].close();
+			updateLogPSArr[i].close();
 		}
 		File file = new File("java.lock");
 		file.delete();
