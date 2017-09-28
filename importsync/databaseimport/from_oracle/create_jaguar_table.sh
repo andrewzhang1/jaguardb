@@ -2,7 +2,7 @@
 
 ##########################################################################################
 ##
-## Usage:   ./create_jaguar_table.sh  <ORACLE_TABLE>  [host:port/service]
+## Usage:   ./create_jaguar_table.sh  oraclehost oracleport  oracleservice  table   uid password jaguardb jagadminpass
 ##
 ##########################################################################################
 
