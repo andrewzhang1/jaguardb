@@ -1,4 +1,15 @@
 
+Jaguar 2.8.0 09/27/2017
+--------------------------------------------------------------
+. Added exportcsv/importcsv commands
+. Added spare_ column in creating table
+. Added "alter table TAB123 add COL TYPE;" support using spare_
+. JAGUAR_HOME now defaults to $HOME/jaguar
+. Expand $ENVVAR/dir/file in load and spool file path
+. Alias varchar type with char
+. Improved install and start/stop shell scripts
+
+
 Jaguar 2.7.9 09/15/2017
 --------------------------------------------------------------
 . Fixed bug in update
