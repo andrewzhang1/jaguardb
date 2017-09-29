@@ -183,9 +183,10 @@ public class Sync
                     
                     //update log status
                     updateLogPS.clearParameters();
-                    updateLogPS.setObject(1, id);
+                    // updateLogPS.setObject(1, id);
+                    updateLogPS.setLong(1, Long.parseLong(id) );
+                    if (DEBUG) { logit("updateLogPS.executeUpdate status_ " + updateLogPS.toString() ); }
                     updateLogPS.executeUpdate();
-                    if (DEBUG) { logit("updateLogPS.executeUpdate " + updateLogPS.toString() ); }
                     
                     total++;
                 }
@@ -203,6 +204,7 @@ public class Sync
     				long pastid = lastid - keeprows;
             		Statement chst = srcconn.createStatement();
             		String sql = "delete from " + changeLog + " where id_ < " + pastid;
+					if ( DEBUG ) logit( sql );
             		chst.executeUpdate( sql);
     				chst.close();
     			}
