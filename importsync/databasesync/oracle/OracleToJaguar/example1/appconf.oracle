@@ -1,10 +1,7 @@
-source_jdbcurl=jdbc:oracle:thin:@//localhost:1522/test
-source_table=table234
-#source_table=table234|table345
+source_jdbcurl=jdbc:oracle:thin:@//192.168.7.120:1522/test
+source_table=table234|table345
 source_user=test
 source_password=test
-keys=partno,name
-#keys=partno,name|col1,col2
 sleep_in_millis=3000
 keep_rows=10000
 

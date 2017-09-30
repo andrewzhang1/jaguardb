@@ -1,7 +1,7 @@
-source_jdbcurl=jdbc:mysql://192.168.7.120:3306/mydb
-source_table=table234|table345
-source_user=test
-source_password=test
+source_jdbcurl=jdbc:postgresql://192.168.7.120:5432/mydb
+source_table=t1
+source_user=dev2
+source_password=dev2
 sleep_in_millis=3000
 keep_rows=10000
 
@@ -13,4 +13,4 @@ dest_password=jaguar
 #stop=true
 
 ## print more debug info
-#debug=true
+debug=true
