@@ -1,4 +1,17 @@
 
+Jaguar 2.8.2 10/31/2017
+--------------------------------------------------------------
+. added bin/tools/convert_mysql_to_jaguar_schema.sh to convert schema
+. details printed in parser error
+. less threads in parallel parser
+. desc table showing default values
+. added default values in create table
+. fixed bug in resize local file
+. improved concurrency control
+. logging command or error by $DB.log $DB.err
+. added @file or source file in jql
+. uuid value override by user-input
+
 Jaguar 2.8.1 09/30/2017
 --------------------------------------------------------------
 . Fixed bug with database import from exported data
