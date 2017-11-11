@@ -5,6 +5,7 @@
 # Created by: Andrew Zhang
 # Date: June 27, 2015
 #
+# Update: 11/10/2017
 
 # Test 1:
 # Create database and grant ussers; 
